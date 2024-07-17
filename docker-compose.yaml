@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:  
+  nextjs:
+    build:
+      context: ./ # Substitua pelo caminho para o seu código-fonte do Next.js
+      dockerfile: Dockerfile
+    container_name: tecnofam-pwa
+    ports:
+      - 3000:3000
+    networks:
+      - tecnofam
+
+  backup:
+    image: tianon/true
+    restart: "no"
+    profiles:
+      - cli
+
+  restore:
+    image: tianon/true
+    restart: "no"
+    profiles:
+      - cli
+      
+networks:
+  tecnofam:
+    external: true
+    driver: bridge
+    name: tecnofam_cms_alpha
+    #    name: ${IO_PROJECT}_${IO_APP}_${IO_STAGE}
+      
