@@ -7,6 +7,7 @@ import Logo from '../public/logo.svg'
 import TextCapitulos from './TextCapitulos'
 import { SearchBar } from "./SearchBar.jsx";
 import { SearchResultsList } from "./SearchResultsList.jsx";
+import Dropdown from './CapitulosSidebar.jsx'
 
 export const Capitulos = () => {
     //Importação das Imagens
@@ -219,7 +220,7 @@ export const Capitulos = () => {
 
     const Comunicacao= async () => {
        
-        const url = 'https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*';
+        const url = 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*';
 
         try {
             const response = await fetch(url);
@@ -295,7 +296,7 @@ export const Capitulos = () => {
                             <button type="button" className="clean-btn navbar-sidebar__back" id="back-button" onClick={() => setShowSummary(true)}>← Voltar para o menu principal</button>
                             {/* Dropdown do Sumário */}
                             <div>
-                                <a 
+                                {/* <a 
                                     className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ripple ${
                                     isCollapsed ? 'collapsed' : ''
                                     }`}
@@ -304,133 +305,43 @@ export const Capitulos = () => {
                                 >
                                     <span className="w-100 text-primary">Boas práticas Agrícolas</span>{' '}
                                     <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} icon-deg`}></i>
-                                </a>
+                                </a> */}
                                 {/* Conteúdo do Sidebar, dentro do Dropdown Sumário */}
-                                {boaPagro.length > 0 ? (
-                                boaPagro.map((item) => (
-                                    <ul key={item.id} id="collapseExample1"
-                                        className={`list-group list-group-flush mx-2 py-1 ${isCollapsed ? 'collapse' : 'show'}`}
-                                    >
-                                        <li className={`list-group-item py-2 ${activeTitle === item.id ? 'active' : ''}`}
-                                            onClick={() => { handleTitleClick(item.id); setIsOffcanvasOpen(false);}}
-                                            style={{cursor: 'pointer'}}
-                                        >
-                                            <a 
-                                                href={`#capitulo_${item.id}`} 
-                                                className={activeTitle === item.id ? 'active-link-summary' : ''}
-                                            >
-                                                {item.attributes.titulo}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                ))
-                                ) : (
-                                    <p className='d-flex justify-content-center' style={{marginTop: 20}}>Carregando dados...</p>
-                                )}
-                            </div>
-                            
-                            <div>
-                                <a 
-                                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ripple ${
-                                    isCollapsed ? 'collapsed' : ''
-                                    }`}
-                                    aria-current="true"
-                                    onClick={handleToggle}
-                                >
-                                    <span className="w-100 text-primary">Boas práticas Apícolas</span>{' '}
-                                    <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} icon-deg`}></i>
-                                </a>
-                                {/* Conteúdo do Sidebar, dentro do Dropdown Sumário */}
-                                {boaPApi.length > 0 ? (
-                                boaPApi.map((item) => (
-                                    <ul key={item.id} id="collapseExample1"
-                                        className={`list-group list-group-flush mx-2 py-1 ${isCollapsed ? 'collapse' : 'show'}`}
-                                    >
-                                        <li className={`list-group-item py-2 ${activeTitle === item.id ? 'active' : ''}`}
-                                            onClick={() => { handleTitleClick(item.id); setIsOffcanvasOpen(false);}}
-                                            style={{cursor: 'pointer'}}
-                                        >
-                                            <a 
-                                                href={`#capitulo_${item.id}`} 
-                                                className={activeTitle === item.id ? 'active-link-summary' : ''}
-                                            >
-                                                {item.attributes.titulo}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                ))
-                                ) : (
-                                    <p className='d-flex justify-content-center' style={{marginTop: 20}}>Carregando dados...</p>
-                                )}
-                            </div>
-                            <div>
-                                <a 
-                                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ripple ${
-                                    isCollapsed ? 'collapsed' : ''
-                                    }`}
-                                    aria-current="true"
-                                    onClick={handleToggle}
-                                >
-                                    <span className="w-100 text-primary">pesticidas e abelhas</span>{' '}
-                                    <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} icon-deg`}></i>
-                                </a>
-                                {/* Conteúdo do Sidebar, dentro do Dropdown Sumário */}
-                                {pesticida.length > 0 ? (
-                                pesticida.map((item) => (
-                                    <ul key={item.id} id="collapseExample1"
-                                        className={`list-group list-group-flush mx-2 py-1 ${isCollapsed ? 'collapse' : 'show'}`}
-                                    >
-                                        <li className={`list-group-item py-2 ${activeTitle === item.id ? 'active' : ''}`}
-                                            onClick={() => { handleTitleClick(item.id); setIsOffcanvasOpen(false);}}
-                                            style={{cursor: 'pointer'}}
-                                        >
-                                            <a 
-                                                href={`#capitulo_${item.id}`} 
-                                                className={activeTitle === item.id ? 'active-link-summary' : ''}
-                                            >
-                                                {item.attributes.titulo}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                ))
-                                ) : (
-                                    <p className='d-flex justify-content-center' style={{marginTop: 20}}>Carregando dados...</p>
-                                )}
-                            </div>
-                            <div>
-                                <a 
-                                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ripple ${
-                                    isCollapsed ? 'collapsed' : ''
-                                    }`}
-                                    aria-current="true"
-                                    onClick={handleToggle}
-                                >
-                                    <span className="w-100 text-primary">Boas práticas de comunicação</span>{' '}
-                                    <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} icon-deg`}></i>
-                                </a>
-                                {/* Conteúdo do Sidebar, dentro do Dropdown Sumário */}
-                                {boaPcom.length > 0 ? (
-                                boaPcom.map((item) => (
-                                    <ul key={item.id} id="collapseExample1"
-                                        className={`list-group list-group-flush mx-2 py-1 ${isCollapsed ? 'collapse' : 'show'}`}
-                                    >
-                                        <li className={`list-group-item py-2 ${activeTitle === item.id ? 'active' : ''}`}
-                                            onClick={() => { handleTitleClick(item.id); setIsOffcanvasOpen(false);}}
-                                            style={{cursor: 'pointer'}}
-                                        >
-                                            <a 
-                                                href={`#capitulo_${item.id}`} 
-                                                className={activeTitle === item.id ? 'active-link-summary' : ''}
-                                            >
-                                                {item.attributes.titulo}
-                                            </a>
-                                        </li>
-                                    </ul>
-                                ))
-                                ) : (
-                                    <p className='d-flex justify-content-center' style={{marginTop: 20}}>Carregando dados...</p>
-                                )}
-                            </div>
+                                 {/* Dropdowns dinâmicos */}
+                    <Dropdown title="Boas práticas Agrícolas"
+                        items={boaPagro} activeTitle={activeTitle}
+                        handleTitleClick={handleTitleClick}
+                        isCollapsed={isCollapsed}
+                        handleToggle={handleToggle}
+                        setIsOffcanvasOpen={setIsOffcanvasOpen}
+                    />
+                    <Dropdown title="Boas práticas Apícolas" items={boaPApi} 
+                        activeTitle={activeTitle}
+                        handleTitleClick={handleTitleClick}
+                        isCollapsed={isCollapsed}
+                        handleToggle={handleToggle}
+                        setIsOffcanvasOpen={setIsOffcanvasOpen}
+
+                    />
+                    <Dropdown title="Pesticidas e abelhas" items={pesticida} 
+                        activeTitle={activeTitle}
+                        handleTitleClick={handleTitleClick}
+                        isCollapsed={isCollapsed}
+                        handleToggle={handleToggle}
+                        setIsOffcanvasOpen={setIsOffcanvasOpen}
+
+                    />
+                    <Dropdown title="Boas práticas de comunicação" items={boaPcom} 
+                        activeTitle={activeTitle}
+                        handleTitleClick={handleTitleClick}
+                        isCollapsed={isCollapsed}
+                        handleToggle={handleToggle}
+                        setIsOffcanvasOpen={setIsOffcanvasOpen}
+
+                    />
+
+                    {/* ... outros componentes */}
+                        </div>
                         </div>
                     </div>
                     {/* Opções Retornadas quando o Usuário Aperta no Botão "← Voltar para o menu principal" */}
