@@ -7,7 +7,7 @@ import Logo from '../public/logo.svg'
 import TextCapitulos from './TextCapitulos'
 import { SearchBar } from "./SearchBar.jsx";
 import { SearchResultsList } from "./SearchResultsList.jsx";
-import Dropdown from './CapitulosSidebar.jsx'
+import Sidebar from './Sidebar.jsx'
 
 export const Capitulos = () => {
     //Importação das Imagens
@@ -23,11 +23,6 @@ export const Capitulos = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
     const [data, setData] = useState([]);
-    const [pesticida, setPesticida] = useState([])
-    const [boaPagro, setBoaPagro] = useState([])
-    const [boaPApi, setBoaPApi] = useState([])
-    const [boaPcom, setBoaPcom] = useState([])
-
     const [activeTitle, setActiveTitle] = useState(null);
     const [showSummary, setShowSummary] = useState(true);
 
@@ -98,11 +93,7 @@ export const Capitulos = () => {
 
     //Puxando a API
     useEffect(() => {
-        // CarregaCapitulos();
-        BoapAgro();
-        BoapApicola();
-        Comunicacao();
-        Pesticidas();
+        CarregaCapitulos();
     }, []);
 
     useEffect(() => {
@@ -120,7 +111,7 @@ export const Capitulos = () => {
     const CarregaCapitulos = async () => {
         //const url = 'https://tecnofam-strapi.a.cnpgc.embrapa.br/api/capitulos?populate=*';
         // const url = 'https://api-cartilha-teste-production.up.railway.app/api/capitulos?populate=*'
-        const url = 'https://tecnofam-strapi.cpao.embrapa.br/api/capitulos?populate=*';
+        const url = 'https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*';
 
         try {
             const response = await fetch(url);
@@ -142,107 +133,6 @@ export const Capitulos = () => {
             console.error(error);
         }
     };
-
-    const BoapAgro = async () => {
-       
-        const url = 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*';
-
-        try {
-            const response = await fetch(url);
-            if (response.ok) {
-                const json = await response.json();
-                const data = json.data;
-                setBoaPagro(data);
-                
-                if (asPath.includes('#capitulo_')) {
-                    const chapterNumber = extractChapterNumberFromAnchor(asPath);
-                    setActiveTitle(chapterNumber);
-                } else if (data.length > 0) {
-                    setActiveTitle(data[0].id);
-                }
-            } else {
-                throw new Error('Falha na requisição. Código de status: ' + response.status);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const BoapApicola= async () => {
-       
-        const url = 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*';
-
-        try {
-            const response = await fetch(url);
-            if (response.ok) {
-                const json = await response.json();
-                const data = json.data;
-                setBoaPApi(data);
-                
-                if (asPath.includes('#capitulo_')) {
-                    const chapterNumber = extractChapterNumberFromAnchor(asPath);
-                    setActiveTitle(chapterNumber);
-                } else if (data.length > 0) {
-                    setActiveTitle(data[0].id);
-                }
-            } else {
-                throw new Error('Falha na requisição. Código de status: ' + response.status);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const Pesticidas= async () => {
-       
-        const url = 'https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*';
-
-        try {
-            const response = await fetch(url);
-            if (response.ok) {
-                const json = await response.json();
-                const data = json.data;
-                setPesticida(data);
-                
-                if (asPath.includes('#capitulo_')) {
-                    const chapterNumber = extractChapterNumberFromAnchor(asPath);
-                    setActiveTitle(chapterNumber);
-                } else if (data.length > 0) {
-                    setActiveTitle(data[0].id);
-                }
-            } else {
-                throw new Error('Falha na requisição. Código de status: ' + response.status);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const Comunicacao= async () => {
-       
-        const url = 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*';
-
-        try {
-            const response = await fetch(url);
-            if (response.ok) {
-                const json = await response.json();
-                const data = json.data;
-                setBoaPcom(data);
-                
-                if (asPath.includes('#capitulo_')) {
-                    const chapterNumber = extractChapterNumberFromAnchor(asPath);
-                    setActiveTitle(chapterNumber);
-                } else if (data.length > 0) {
-                    setActiveTitle(data[0].id);
-                }
-            } else {
-                throw new Error('Falha na requisição. Código de status: ' + response.status);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
 
     useEffect(() => {
         if (activeTitle === null) {
@@ -279,95 +169,7 @@ export const Capitulos = () => {
             {/* Div que Pega todo o Conteúdo da Página */}
             <div className="container-wrapper">
                 {/* Código Sidebar */}
-                <nav id="sidebarMenu" className={`collapse d-lg-block sidebar bg-white thin-scrollbar ${isOffcanvasOpen ? 'show' : ''}`} tabIndex="-1">
-                    <div className="position-sticky">
-                        <div id="summary" className="list-group list-group-flush mt-2 py-2 menu_SIkG" style={{ display: showSummary ? 'block' : 'none' }}>
-                            {/* Logo IF / Embrapa Dentro do Menu */}
-                            <div className='logo-container-fixed'>
-                                <div className="logo-container d-flex align-items-center justify-content-between">
-                                    <Link href="/home">
-                                        <Image className="img-sidebar-top mx-3" src={LogoIFEmbrapa} alt="logo Embrapa com letras em azul com um símbolo verde, sendo que as letras em cima do símbolo são brancas" width="45%" height={46} priority/>
-                                    </Link>
-                                    <button id="btn-close-sidebar" type="button" className="btn-close btn-close-dark btn-close-cap" data-bs-dismiss="collapse" aria-label="Close" onClick={() => { closeSidebar(); setShowSummary(true); }}></button>
-                                </div>
-                            </div>
-                            <hr className="featurette-divider line-menu"></hr>
-                            {/* Botão para Retornar as Opções "Edição Completa e Autores" | Opção Disponível quando a Tela é Menor que 992px */}
-                            <button type="button" className="clean-btn navbar-sidebar__back" id="back-button" onClick={() => setShowSummary(true)}>← Voltar para o menu principal</button>
-                            {/* Dropdown do Sumário */}
-                            <div>
-                                {/* <a 
-                                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ripple ${
-                                    isCollapsed ? 'collapsed' : ''
-                                    }`}
-                                    aria-current="true"
-                                    onClick={handleToggle}
-                                >
-                                    <span className="w-100 text-primary">Boas práticas Agrícolas</span>{' '}
-                                    <i className={`fas fa-chevron-${isCollapsed ? 'right' : 'down'} icon-deg`}></i>
-                                </a> */}
-                                {/* Conteúdo do Sidebar, dentro do Dropdown Sumário */}
-                                 {/* Dropdowns dinâmicos */}
-                    <Dropdown title="Boas práticas Agrícolas"
-                        items={boaPagro} activeTitle={activeTitle}
-                        handleTitleClick={handleTitleClick}
-                        isCollapsed={isCollapsed}
-                        handleToggle={handleToggle}
-                        setIsOffcanvasOpen={setIsOffcanvasOpen}
-                    />
-                    <Dropdown title="Boas práticas Apícolas" items={boaPApi} 
-                        activeTitle={activeTitle}
-                        handleTitleClick={handleTitleClick}
-                        isCollapsed={isCollapsed}
-                        handleToggle={handleToggle}
-                        setIsOffcanvasOpen={setIsOffcanvasOpen}
-
-                    />
-                    <Dropdown title="Pesticidas e abelhas" items={pesticida} 
-                        activeTitle={activeTitle}
-                        handleTitleClick={handleTitleClick}
-                        isCollapsed={isCollapsed}
-                        handleToggle={handleToggle}
-                        setIsOffcanvasOpen={setIsOffcanvasOpen}
-
-                    />
-                    <Dropdown title="Boas práticas de comunicação" items={boaPcom} 
-                        activeTitle={activeTitle}
-                        handleTitleClick={handleTitleClick}
-                        isCollapsed={isCollapsed}
-                        handleToggle={handleToggle}
-                        setIsOffcanvasOpen={setIsOffcanvasOpen}
-
-                    />
-
-                    {/* ... outros componentes */}
-                        </div>
-                        </div>
-                    </div>
-                    {/* Opções Retornadas quando o Usuário Aperta no Botão "← Voltar para o menu principal" */}
-                    <div id='main-navbar-options-menu' style={{ marginTop: 16, display: showSummary ? 'none' : 'block' }}>
-                        <div className="logo-container d-flex align-items-center justify-content-between">
-                            <Link href="/home">
-                                <Image className="img-sidebar-top mx-3" src={LogoIFEmbrapa} alt="logo Embrapa com letras em azul com um símbolo verde, sendo que as letras em cima do símbolo são brancas" width="45%" height={46} priority/>
-                            </Link>
-                            <button id="btn-close-sidebar" type="button" className="btn-close btn-close-dark btn-close-cap" data-bs-dismiss="sidebar" aria-label="Close" onClick={closeSidebar}></button>
-                        </div>
-                        <hr className="featurette-divider line-menu"></hr>
-                        <button type="button" className="clean-btn navbar-sidebar__back" id="back-button" onClick={toggleSummaryAndMainMenu}>← Voltar para o Sumário</button>
-                        <ul className="navbar-nav ms-auto d-flex itens-menu-cap">
-                            <li className="nav-item mx-3">
-                                <Link className="nav-link back-item-link py-2" href="/edicao-completa" aria-current="page">
-                                    <span className="link-text">Edição Completa</span>
-                                </Link> 
-                            </li>
-                            <li className="nav-item mx-3">
-                                <Link className="nav-link back-item-link py-2" href="/autores" aria-current="page">
-                                    <span className="link-text">Autores</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+               <Sidebar isOffcanvasOpen={isOffcanvasOpen} setIsOffcanvasOpen={setIsOffcanvasOpen}/>
 
                 {/* Código Navbar */}
                 <nav id="main-navbar" className="navbar navbar-expand-lg navbar-light bg-white fixed-top">

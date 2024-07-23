@@ -8,7 +8,7 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
     const extractedHeaderBlocks = [];
 
     lista.forEach((cap) => {
-      const blocks = JSON.parse(cap.attributes.description).blocks;
+      const blocks = JSON.parse(cap.attributes.descricao).blocks;
       blocks.forEach((block) => {
         if (block.type === 'header') {
           extractedHeaderBlocks.push(block);
@@ -142,31 +142,31 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
             {lista.map((cap) => (
               <div key={cap.id} className="bd-content ps-lg-2">
                 {activeTitle === cap.id && (
-                  <h1>{cap.attributes.title}</h1>
+                  <h1>{cap.attributes.titulo}</h1>
                 )}
                 {activeTitle === cap.id && (
                   <div className='center-textArticle'>{cap.attributes.subtitle}</div>
                 )}
                 {activeTitle === cap.id && (
-                  <div dangerouslySetInnerHTML={{ __html: convertToHTML(JSON.parse(cap.attributes.description)) }} />
+                  <div dangerouslySetInnerHTML={{ __html: convertToHTML(JSON.parse(cap.attributes.descricao)) }} />
                 )}
 
-                {/* {activeTitle === cap.id && cap.attributes.referencias && cap.attributes.referencias.length > 0 && cap.attributes.referencias.description != null && ( */}
-                {activeTitle === cap.id && cap.attributes.referencias && cap.attributes.referencias.length > 0 && cap.attributes.referencias[0].description != null && (
+                {/* {activeTitle === cap.id && cap.attributes.referencias && cap.attributes.referencias.length > 0 && cap.attributes.referencias.descricao != null && ( */}
+                {activeTitle === cap.id && cap.attributes.referencias && cap.attributes.referencias.length > 0 && cap.attributes.referencias[0].descricao != null && (
 
                   <div className="references-section">
                     <h3>Instituição</h3>
                     {cap.attributes.referencias.map((ref, index) => (
                       <div key={index} className="reference">
-                        {ref.description && (
+                        {ref.descricao && (
                           <div
                             className="reference-content"
-                            dangerouslySetInnerHTML={{ __html: RefconvertToHTML(JSON.parse(ref.description)) }}
+                            dangerouslySetInnerHTML={{ __html: RefconvertToHTML(JSON.parse(ref.descricao)) }}
 
                             // dangerouslySetInnerHTML={{
-                            //   __html: JSON.parse(ref.description).blocks[0].data.text
+                            //   __html: JSON.parse(ref.descricao).blocks[0].data.text
                             // }}
-                            // {convertToHTML(JSON.parse(ref.description))}
+                            // {convertToHTML(JSON.parse(ref.descricao))}
                           />
                         )}
                         {console.log("instituicao",cap.attributes.referencias)} 
