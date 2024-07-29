@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import TableOfContents from './TableOfContents';
+import ContentConverter from './ContentConverter';
+import RefContentConverter from './RefContentConverter';
 import { useRouter } from 'next/router';
 
 const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
   const [headerBlocks, setHeaderBlocks] = useState([]);
+  const [expandedChapter, setExpandedChapter] = useState(null);
+  const [activeSubChapter, setActiveSubChapter] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Extrair blocos de cabeçalho
     const extractedHeaderBlocks = lista.flatMap((cap) => {
       const blocks = JSON.parse(cap.attributes.descricao).blocks;
       return blocks.filter((block) => block.type === 'header');
@@ -16,86 +19,59 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
   }, [lista]);
 
   useEffect(() => {
-    // Sincronizar activeTitle com a URL
-    const chapterMatch = router.asPath.match(/#item_(\d+)/);
+    const chapterMatch = router.asPath.match(/#capitulo_(\d+)/);
+    const subChapterMatch = router.asPath.match(/#subcapitulo_(\d+)/);
+    
     if (chapterMatch) {
       const chapterId = parseInt(chapterMatch[1]);
       if (chapterId !== activeTitle) {
         setActiveTitle(chapterId);
+        setActiveSubChapter(null);
+      }
+    } else if (subChapterMatch) {
+      const subChapterId = parseInt(subChapterMatch[1]);
+      const parentChapter = lista.find(cap => cap.attributes.subnivel.some(sub => sub.id === subChapterId));
+      if (parentChapter) {
+        setActiveTitle(parentChapter.id);
+        setActiveSubChapter(subChapterId);
       }
     }
-  }, [router.asPath, activeTitle, setActiveTitle]);
+  }, [router.asPath, activeTitle, lista, setActiveTitle]);
 
-  const convertToHTML = (data) => {
-    let htmlContent = '';
-    data.blocks.forEach((block) => {
-      switch (block.type) {
-        case 'header':
-          const anchor = block.data.text.replace(/ /g, "_");
-          htmlContent += `<h${block.data.level} class="titulo" id='${anchor}'>${block.data.text}</h${block.data.level}>`;
-          break;
-        case 'paragraph':
-          htmlContent += `<p class="paragrafo">${block.data.text}</p>`;
-          break;
-        case 'list':
-          const listType = block.data.style === 'ordered' ? 'ol' : 'ul';
-          const listItemsHTML = block.data.items.map(item => `<li>${item}</li>`).join('');
-          htmlContent += `<${listType} class="lista">${listItemsHTML}</${listType}>`;
-          break;
-        case 'image':
-          const imageSrc = block.data.file.url;
-          const imageCaption = block.data.caption;
-          htmlContent += `<img src="${imageSrc}" alt="${imageCaption}" />`;
-          htmlContent += `<p class="legenda-img">${imageCaption}</p>`;
-          break;
-        case 'embed':
-          const videoUrl = new URL(block.data.source);
-          const videoId = videoUrl.pathname.substring(1);
-          const videoEmbedUrl = `https://www.youtube.com/embed/${videoId}`;
-          htmlContent +=
-            `<div id="player">
-              <div class="html5-video-player">
-                <iframe width="100%" height="315" src="${videoEmbedUrl}" frameBorder="0" allowFullScreen></iframe>
-              </div>
-            </div>`;
-          break;
-        default:
-          break;
-      }
-    });
-    return htmlContent;
+  const handleNavigation = (chapterId) => {
+    setActiveTitle(chapterId);
+    setActiveSubChapter(null);
+    router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
   };
 
-  const RefconvertToHTML = (data) => {
-    let htmlContent = `<div class='instituicao'>`;
-    data.blocks.forEach((block) => {
-      switch (block.type) {
-        case 'header':
-          const anchor = block.data.text.replace(/ /g, "_");
-          htmlContent += `<h4 class="nome-instituicao" id='${anchor}'>${block.data.text}</h4>`;
-          break;
-        case 'paragraph':
-          htmlContent += `<p class="paragrafo">${block.data.text}</p>`;
-          break;
-        case 'LinkTool':
-          htmlContent += `<a id='links-sites' href="${block.data.link}" target="_blank" title="Acessar site" class="paragrafo">${block.data.link}</a>`;
-          break;
-        default:
-          break;
-      }
-    });
-    htmlContent += `</div>`;
-    return htmlContent;
+  const handleToggleSubchapters = (chapterId) => {
+    setExpandedChapter(expandedChapter === chapterId ? null : chapterId);
   };
+
+  const handleSubChapterNavigation = (subChapterId) => {
+    setActiveSubChapter(subChapterId);
+    router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
+  };
+
+  const renderSubchapters = (subcapitulos) => (
+    <div className={`subchapter-section ${expandedChapter === subcapitulos.id ? 'expanded' : 'collapsed'}`}>
+      <h3 onClick={() => handleToggleSubchapters(subcapitulos.id)} style={{ cursor: 'pointer' }}>
+        {expandedChapter === subcapitulos.id ? '▲ Subcapítulos' : '▼ Subcapítulos'}
+      </h3>
+      {expandedChapter === subcapitulos.id && (
+        subcapitulos.subnivel.map((subcap) => (
+          <div key={subcap.id} className="subchapter" onClick={() => handleSubChapterNavigation(subcap.id)}>
+            <h4>{subcap.titulo_secao}</h4>
+            {activeSubChapter === subcap.id && <ContentConverter data={JSON.parse(subcap.texto_conteudo)} />}
+          </div>
+        ))
+      )}
+    </div>
+  );
 
   const currentIndex = lista.findIndex((cap) => cap.id === activeTitle);
   const prevChapter = lista[currentIndex - 1];
   const nextChapter = lista[currentIndex + 1];
-
-  const handleNavigation = (chapterId) => {
-    setActiveTitle(chapterId);
-    router.push(`#item_${chapterId}`);
-  };
 
   return (
     <>
@@ -108,17 +84,15 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
                   <>
                     <h1>{cap.attributes.titulo}</h1>
                     <div className='center-textArticle'>{cap.attributes.subtitle}</div>
-                    <div dangerouslySetInnerHTML={{ __html: convertToHTML(JSON.parse(cap.attributes.descricao)) }} />
+                    <ContentConverter data={JSON.parse(cap.attributes.descricao)} />
+                    {cap.attributes.subnivel && cap.attributes.subnivel.length > 0 && renderSubchapters(cap.attributes)}
                     {cap.attributes.referencias && cap.attributes.referencias.length > 0 && cap.attributes.referencias[0].descricao != null && (
                       <div className="references-section">
                         <h3>Instituição</h3>
                         {cap.attributes.referencias.map((ref, index) => (
                           <div key={index} className="reference">
                             {ref.descricao && (
-                              <div
-                                className="reference-content"
-                                dangerouslySetInnerHTML={{ __html: RefconvertToHTML(JSON.parse(ref.descricao)) }}
-                              />
+                              <RefContentConverter data={JSON.parse(ref.descricao)} />
                             )}
                           </div>
                         ))}

@@ -85,7 +85,8 @@ export const Capitulos = () => {
 
     useEffect(() => {
         if (activeTitle !== null) {
-            scrollToTop();
+            // scrollToTop();
+            console.log('chamnou scrol top')
         }
     }, [activeTitle]);
 

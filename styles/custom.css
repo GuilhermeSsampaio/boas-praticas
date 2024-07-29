@@ -17,6 +17,19 @@ hr {
     min-height: 80vh;
 }
 
+
+.list-group-item-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.icon-deg {
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+
 #links-sites {
     color: #007bff; /* Cor padrão do texto do link */
     transition: transform 0.2s, color 0.2s; /* Adiciona transições suaves para a animação */
