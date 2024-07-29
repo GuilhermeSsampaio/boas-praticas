@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 
 const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
   const [headerBlocks, setHeaderBlocks] = useState([]);
-  const [expandedChapter, setExpandedChapter] = useState(null);
   const [activeSubChapter, setActiveSubChapter] = useState(null);
   const router = useRouter();
 
@@ -44,28 +43,26 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
     router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
   };
 
-  const handleToggleSubchapters = (chapterId) => {
-    setExpandedChapter(expandedChapter === chapterId ? null : chapterId);
-  };
-
   const handleSubChapterNavigation = (subChapterId) => {
     setActiveSubChapter(subChapterId);
     router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
   };
 
   const renderSubchapters = (subcapitulos) => (
-    <div className={`subchapter-section ${expandedChapter === subcapitulos.id ? 'expanded' : 'collapsed'}`}>
-      <h3 onClick={() => handleToggleSubchapters(subcapitulos.id)} style={{ cursor: 'pointer' }}>
-        {expandedChapter === subcapitulos.id ? '▲ Subcapítulos' : '▼ Subcapítulos'}
-      </h3>
-      {expandedChapter === subcapitulos.id && (
-        subcapitulos.subnivel.map((subcap) => (
-          <div key={subcap.id} className="subchapter" onClick={() => handleSubChapterNavigation(subcap.id)}>
-            <h4>{subcap.titulo_secao}</h4>
-            {activeSubChapter === subcap.id && <ContentConverter data={JSON.parse(subcap.texto_conteudo)} />}
-          </div>
-        ))
-      )}
+    <div className="subchapter-section">
+      {subcapitulos.subnivel.map((subcap) => (
+        <div key={subcap.id} className="subchapter">
+          <h4
+            onClick={() => handleSubChapterNavigation(subcap.id)}
+            style={{ cursor: 'pointer', color: activeSubChapter === subcap.id ? 'blue' : 'black' }}
+          >
+            {subcap.titulo_secao}
+          </h4>
+          {activeSubChapter === subcap.id && (
+            <ContentConverter data={JSON.parse(subcap.texto_conteudo)} />
+          )}
+        </div>
+      ))}
     </div>
   );
 

@@ -9,7 +9,6 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
     const [collections, setCollections] = useState([]);
     const [activeCollection, setActiveCollection] = useState(null);
     const [activeChapter, setActiveChapter] = useState(null);
-    const [activeSubChapter, setActiveSubChapter] = useState(null);
     const [showSummary, setShowSummary] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
@@ -43,7 +42,6 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
     const handleToggle = (collectionId) => {
         setActiveCollection(activeCollection === collectionId ? null : collectionId);
         setActiveChapter(null); // Resetar capítulo ativo ao mudar a coleção ativa
-        setActiveSubChapter(null); // Resetar subcapítulo ativo ao mudar a coleção ativa
     };
 
     const handleItemClick = (collectionId) => {
@@ -53,13 +51,11 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
 
     const handleChapterClick = (chapterId) => {
         setActiveChapter(activeChapter === chapterId ? null : chapterId);
-        setActiveSubChapter(null); // Resetar subcapítulo ativo ao mudar o capítulo ativo
         // Atualiza a URL para o capítulo selecionado
         router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
     };
 
     const handleSubChapterClick = (subChapterId) => {
-        setActiveSubChapter(subChapterId);
         // Atualiza a URL para o subcapítulo selecionado
         router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
     };
@@ -96,25 +92,24 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                             <ul className="list-group list-group-flush mx-2 py-1">
                                                 {collection.data.data.map((item) => (
                                                     <li key={item.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
-                                                        <div className="d-flex justify-content-between align-items-center">
-                                                            <a 
-                                                                href={`#capitulo_${item.id}`}
-                                                                onClick={(e) => {
-                                                                    e.preventDefault(); // Previne o comportamento padrão do link
-                                                                    handleChapterClick(item.id); // Atualiza a URL para o capítulo selecionado
-                                                                }}
-                                                                className="w-100 text-primary"
-                                                            >
-                                                                {item.attributes.titulo}
-                                                            </a>
-                                                            {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
+                                                    <div  className="d-flex justify-content-between align-items-center">
+                                                        <a 
+                                                            href={`#capitulo_${item.id}`}
+                                                            onClick={(e) => {
+                                                                e.preventDefault(); // Previne o comportamento padrão do link
+                                                                handleChapterClick(item.id); // Atualiza a URL para o capítulo selecionado
+                                                            }}
+                                                        >
+                                                            {item.attributes.titulo}
+                                                        </a>
+                                                        {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
                                                                 <i 
                                                                     className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'}`}
                                                                     onClick={() => handleChapterClick(item.id)}
                                                                     style={{ cursor: 'pointer' }}
                                                                 ></i>
                                                             )}
-                                                        </div>
+                                                            </div>
                                                         {activeChapter === item.id && item.attributes.subnivel && (
                                                             <ul className="list-group list-group-flush mx-2 py-1">
                                                                 {item.attributes.subnivel.map((subItem) => (
@@ -125,7 +120,6 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                                                 e.preventDefault(); // Previne o comportamento padrão do link
                                                                                 handleSubChapterClick(subItem.id); // Atualiza a URL para o subcapítulo selecionado
                                                                             }}
-                                                                            className={`w-100 text-secondary ${activeSubChapter === subItem.id ? 'active' : ''}`}
                                                                         >
                                                                             {subItem.titulo_secao}
                                                                         </a>
