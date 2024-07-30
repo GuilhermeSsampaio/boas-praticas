@@ -23,12 +23,23 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                     axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*')
                 ]);
 
-                setCollections([
+                const collectionsData = [
                     { id: 1, title: 'Pesticidas e abelhas', data: responses[0].data },
                     { id: 2, title: 'Boas práticas agrícolas', data: responses[1].data },
                     { id: 3, title: 'Boas práticas apícolas', data: responses[2].data },
                     { id: 4, title: 'Boas práticas de comunicação', data: responses[3].data }
-                ]);
+                ];
+
+                setCollections(collectionsData);
+
+                // Verificar se a coleção ativa e o capítulo ativo estão definidos
+                if (collectionsData.length > 0 && !activeCollection && !activeChapter) {
+                    const firstCollection = collectionsData[0];
+                    setActiveCollection(firstCollection.id);
+                    setActiveChapter(firstCollection.data.data[0].id);
+                    router.push(`#capitulo_${firstCollection.data.data[0].id}`, undefined, { shallow: true });
+                    onSelectCollection(firstCollection.id); // Notifica o pai sobre a seleção
+                }
             } catch (error) {
                 console.error('Erro ao buscar as coleções', error);
             } finally {
@@ -38,6 +49,14 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
 
         fetchCollections();
     }, []);
+
+    const closeSidebar = () => {
+        const sidebarMenu = document.getElementById("sidebarMenu");
+        if (sidebarMenu) {
+          sidebarMenu.classList.remove("show");
+        }
+        setIsOffcanvasOpen(false);
+    }
 
     const handleToggle = (collectionId) => {
         setActiveCollection(activeCollection === collectionId ? null : collectionId);
@@ -49,19 +68,23 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
         handleToggle(collectionId);
     };
 
-    const handleChapterClick = (chapterId) => {
-        setActiveChapter(activeChapter === chapterId ? null : chapterId);
-        // Atualiza a URL para o capítulo selecionado
-        router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
+    const handleChapterClick = (chapterId, hasSubChapters) => {
+        if (hasSubChapters) {
+            setActiveChapter(activeChapter === chapterId ? null : chapterId);
+        } else {
+            setActiveChapter(chapterId);
+            router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
+            closeSidebar();
+        }
     };
 
     const handleSubChapterClick = (subChapterId) => {
-        // Atualiza a URL para o subcapítulo selecionado
         router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
+        closeSidebar();
     };
 
     return (
-        <div className="container-wrapper">
+        <div>
             <nav id="sidebarMenu" className={`collapse d-lg-block sidebar bg-white thin-scrollbar ${isOffcanvasOpen ? 'show' : ''}`} tabIndex="-1">
                 <div className="position-sticky">
                     <div id="summary" className="list-group list-group-flush mt-2 py-2 menu_SIkG" style={{ display: showSummary ? 'block' : 'none' }}>
@@ -92,24 +115,24 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                             <ul className="list-group list-group-flush mx-2 py-1">
                                                 {collection.data.data.map((item) => (
                                                     <li key={item.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
-                                                    <div  className="d-flex justify-content-between align-items-center">
-                                                        <a 
-                                                            href={`#capitulo_${item.id}`}
-                                                            onClick={(e) => {
-                                                                e.preventDefault(); // Previne o comportamento padrão do link
-                                                                handleChapterClick(item.id); // Atualiza a URL para o capítulo selecionado
-                                                            }}
-                                                        >
-                                                            {item.attributes.titulo}
-                                                        </a>
-                                                        {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
+                                                        <div className="d-flex justify-content-between align-items-center">
+                                                            <a 
+                                                                href={`#capitulo_${item.id}`}
+                                                                onClick={(e) => {
+                                                                    e.preventDefault(); // Previne o comportamento padrão do link
+                                                                    handleChapterClick(item.id, item.attributes.subnivel && item.attributes.subnivel.length > 0); // Passa se o capítulo tem subcapítulos
+                                                                }}
+                                                            >
+                                                                {item.attributes.titulo}
+                                                            </a>
+                                                            {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
                                                                 <i 
                                                                     className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'}`}
-                                                                    onClick={() => handleChapterClick(item.id)}
+                                                                    onClick={() => handleChapterClick(item.id, true)}
                                                                     style={{ cursor: 'pointer' }}
                                                                 ></i>
                                                             )}
-                                                            </div>
+                                                        </div>
                                                         {activeChapter === item.id && item.attributes.subnivel && (
                                                             <ul className="list-group list-group-flush mx-2 py-1">
                                                                 {item.attributes.subnivel.map((subItem) => (

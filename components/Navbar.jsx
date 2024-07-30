@@ -1,16 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import Logo from '../public/logo.svg';
-import TextCapitulos from './TextCapitulos';
-import { SearchBar } from "./SearchBar.jsx";
-import { SearchResultsList } from "./SearchResultsList.jsx";
-import Sidebar from './Sidebar.jsx';
-import { Footer } from './Footer.jsx';
-
-export const Capitulos = () => {
+export const Navbar = () => {
     var LogoIF = require('../public/ifms-dr-marca-2015.png');
     var LogoEmbrapa = require('../public/logo-embrapa-400.png');
     const router = useRouter();
@@ -20,6 +8,13 @@ export const Capitulos = () => {
     const [data, setData] = useState([]);
     const [activeTitle, setActiveTitle] = useState(null);
     const [currentCollection, setCurrentCollection] = useState(null);
+
+    // Atualiza o capítulo ativo e a URL
+    const handleTitleClick = (titleId) => {
+        setActiveTitle(titleId);
+        localStorage.setItem('activeChapter', titleId.toString());
+        router.push(`#capitulo_${titleId}`, undefined, { shallow: true });
+    };
 
     const handleToggleBackDrop = () => {
         setIsOffcanvasOpen((prevState) => !prevState);
@@ -79,8 +74,8 @@ export const Capitulos = () => {
 
     useEffect(() => {
         if (activeTitle !== null) {
-            scrollToTop();
-            console.log('chamnou scrol top');
+            // scrollToTop();
+            console.log('chamnou scrol top')
         }
     }, [activeTitle]);
 
@@ -91,39 +86,12 @@ export const Capitulos = () => {
         });
     };
 
-    const handleSelectCollection = (collectionId) => {
-        const collectionsMap = {
-            1: 'pesticida-abelhas',
-            2: 'boa-pratica-agroes',
-            3: 'boa-pratica-apicolas',
-            4: 'boa-pratica-comunicacaos'
-        };
-        setCurrentCollection(collectionsMap[collectionId]);
-
-        // Resetar o capítulo ativo ao selecionar uma nova coleção
-        setActiveTitle(null);
-        // Evite redirecionamento para a página inicial se não for necessário
-        // router.push('/'); // Voltar para a página inicial ou para o estado inicial
-    };
+ 
 
     const activeChapter = data.find(item => item.id === activeTitle);
-    const displayedTitle = activeChapter ? activeChapter.attributes.titulo : 'Título do Capítulo';
 
-    return (
-        <>
-            <Head>
-                <meta name="referrer" content="no-referrer" />
-                <title>TecnofamApp</title>
-            </Head>
-
-            <div className="container-wrapper">
-                <Sidebar
-                    isOffcanvasOpen={isOffcanvasOpen}
-                    setIsOffcanvasOpen={setIsOffcanvasOpen}
-                    onSelectCollection={handleSelectCollection}
-                />
-
-                <nav id="main-navbar" className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+    return(
+        <nav id="main-navbar" className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
                     <div className="container-fluid">
                         <button className="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#sidebarMenu"
                             aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle Offcanvas" onClick={handleToggleBackDrop}>
@@ -169,44 +137,5 @@ export const Capitulos = () => {
                     </div>
                     {isOffcanvasOpen && <div className="offcanvas-backdrop show" onClick={handleToggleBackDrop}></div>}
                 </nav>
-
-                <main className='docMainContainer_gTbr'>
-                    <div className='container padding-bottom--lg'>
-                        <div className='col'>
-                            <nav className="home-section" aria-label="Breadcrumbs" style={{ marginTop: 120 }}>
-                                <ul className="breadcrumbs">
-                                    <li className="breadcrumbs__item">
-                                        <Link href="/home" className="breadcrumbs__link">
-                                            <i className="fas fa-home" style={{ fontSize: '13px' }}></i>
-                                        </Link>
-                                        <i className="fas fa-chevron-right" style={{ fontSize: '10px' }}></i>
-                                    </li>
-                                    <li className="breadcrumbs__item">
-                                        <span className="breadcrumbs__link">Sumário</span>
-                                        <meta itemProp="position" content="1" />
-                                        <i className="fas fa-chevron-right" style={{ fontSize: '10px' }}></i>
-                                    </li>
-                                    <li className="breadcrumbs__item breadcrumbs__item--active">
-                                        <span className="breadcrumbs__link" itemProp="name">
-                                            {displayedTitle}
-                                        </span>
-                                        <meta itemProp="position" content="2" />
-                                    </li>
-                                </ul>
-                            </nav>
-                            <section className="home-section right-sidebar" style={{ marginTop: 30 }}>
-                                <div id="contents" className="bd-content ps-lg-2">
-                                    <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} />
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                </main>
-            </div>
-
-            <Footer />
-        </>
-    );
-};
-
-export default Capitulos;
+    )
+}
