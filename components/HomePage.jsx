@@ -28,7 +28,7 @@ export const HomePage = () => {
         <>
             <Head>
                 <meta name="referrer" referrerPolicy="no-referrer" />
-                <title>TecnofamApp</title>
+                <title>Boas praticas</title>
             </Head>
 
             {/* Código Navbar Offcanvas */}

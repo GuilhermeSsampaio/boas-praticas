@@ -85,10 +85,10 @@ export const Capitulos = () => {
     }, [activeTitle]);
 
     const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
+        // window.scrollTo({
+        //     top: 0,
+        //     behavior: 'smooth',
+        // });
     };
 
     const handleSelectCollection = (collectionId) => {
@@ -113,7 +113,7 @@ export const Capitulos = () => {
         <>
             <Head>
                 <meta name="referrer" content="no-referrer" />
-                <title>TecnofamApp</title>
+                <title>Boas praticas</title>
             </Head>
 
             <div className="container-wrapper">

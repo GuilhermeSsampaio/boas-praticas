@@ -68,19 +68,19 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
         handleToggle(collectionId);
     };
 
-    const handleChapterClick = (chapterId, hasSubChapters) => {
-        if (hasSubChapters) {
-            setActiveChapter(activeChapter === chapterId ? null : chapterId);
-        } else {
-            setActiveChapter(chapterId);
-            router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
-            closeSidebar();
-        }
+    const handleChapterClick = (chapterId) => {
+        setActiveChapter(chapterId);
+        router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
+        closeSidebar();
     };
 
     const handleSubChapterClick = (subChapterId) => {
         router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
         closeSidebar();
+    };
+
+    const toggleSubChapters = (chapterId) => {
+        setActiveChapter(activeChapter === chapterId ? null : chapterId);
     };
 
     return (
@@ -109,28 +109,42 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                             onClick={() => handleItemClick(collection.id)}
                                         >
                                             <span className="w-100 text-primary">{collection.title}</span>{' '}
-                                            <i className={`fas fa-chevron-${activeCollection === collection.id ? 'down' : 'right'} icon-deg`}></i>
+                                            <i className={`fas fa-chevron-${activeCollection === collection.id ? 'down' : 'right'} icon-deg ${activeCollection === collection.id ? 'icon-deg-active icon-deg-down' : 'icon-deg-right'}`}></i>
                                         </a>
                                         {activeCollection === collection.id && (
                                             <ul className="list-group list-group-flush mx-2 py-1">
                                                 {collection.data.data.map((item) => (
-                                                    <li key={item.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
+                                                    <li 
+                                                        key={item.id} 
+                                                        className={`list-group-item py-2 ${item.attributes.subnivel && item.attributes.subnivel.length > 0 ? 'chapter-with-subchapters' : ''}`}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
                                                         <div className="d-flex justify-content-between align-items-center">
                                                             <a 
                                                                 href={`#capitulo_${item.id}`}
                                                                 onClick={(e) => {
                                                                     e.preventDefault(); // Previne o comportamento padrão do link
-                                                                    handleChapterClick(item.id, item.attributes.subnivel && item.attributes.subnivel.length > 0); // Passa se o capítulo tem subcapítulos
+                                                                    handleChapterClick(item.id); // Navega diretamente para o capítulo
                                                                 }}
                                                             >
                                                                 {item.attributes.titulo}
                                                             </a>
                                                             {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
-                                                                <i 
-                                                                    className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'}`}
-                                                                    onClick={() => handleChapterClick(item.id, true)}
-                                                                    style={{ cursor: 'pointer' }}
-                                                                ></i>
+                                                                <>
+                                                                    <span className="separator">|</span>
+                                                                    <div 
+                                                                        className={`icon-box`}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation(); // Previne que o evento de clique no link seja acionado
+                                                                            toggleSubChapters(item.id); // Alterna a visibilidade dos subcapítulos
+                                                                        }}
+                                                                        style={{ cursor: 'pointer' }}
+                                                                    >
+                                                                        <i 
+                                                                            className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'} icon-deg ${activeChapter === item.id ? 'icon-deg-active icon-deg-down' : 'icon-deg-right'}`}
+                                                                        ></i>
+                                                                    </div>
+                                                                </>
                                                             )}
                                                         </div>
                                                         {activeChapter === item.id && item.attributes.subnivel && (
