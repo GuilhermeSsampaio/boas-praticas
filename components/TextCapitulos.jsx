@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
   const [headerBlocks, setHeaderBlocks] = useState([]);
   const [activeSubChapter, setActiveSubChapter] = useState(null);
+  const [subchaptersList, setSubchaptersList] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -16,6 +17,14 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
     });
     setHeaderBlocks(extractedHeaderBlocks);
   }, [lista]);
+
+  useEffect(() => {
+    // Update the list of subchapters based on the active chapter
+    const activeChapter = lista.find(cap => cap.id === activeTitle);
+    if (activeChapter) {
+      setSubchaptersList(activeChapter.attributes.subnivel || []);
+    }
+  }, [activeTitle, lista]);
 
   useEffect(() => {
     const chapterMatch = router.asPath.match(/#capitulo_(\d+)/);
@@ -46,25 +55,15 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
   const handleSubChapterNavigation = (subChapterId) => {
     setActiveSubChapter(subChapterId);
     router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
-  };
 
-  const renderSubchapters = (subcapitulos) => (
-    <div className="subchapter-section">
-      {subcapitulos.subnivel.map((subcap) => (
-        <div key={subcap.id} className="subchapter">
-          <h4
-            onClick={() => handleSubChapterNavigation(subcap.id)}
-            style={{ cursor: 'pointer', color: activeSubChapter === subcap.id ? 'blue' : 'black' }}
-          >
-            {subcap.titulo_secao}
-          </h4>
-          {activeSubChapter === subcap.id && (
-            <ContentConverter data={JSON.parse(subcap.texto_conteudo)} />
-          )}
-        </div>
-      ))}
-    </div>
-  );
+    // Garantir que o subcapítulo seja rolado para a visibilidade
+    setTimeout(() => {
+        const subChapterElement = document.getElementById(subChapterId);
+        if (subChapterElement) {
+            subChapterElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 100); // Ajuste o tempo conforme necessário
+};
 
   const currentIndex = lista.findIndex((cap) => cap.id === activeTitle);
   const prevChapter = lista[currentIndex - 1];
@@ -82,7 +81,23 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
                     <h1>{cap.attributes.titulo}</h1>
                     <div className='center-textArticle'>{cap.attributes.subtitle}</div>
                     <ContentConverter data={JSON.parse(cap.attributes.descricao)} />
-                    {cap.attributes.subnivel && cap.attributes.subnivel.length > 0 && renderSubchapters(cap.attributes)}
+                    {cap.attributes.subnivel && cap.attributes.subnivel.length > 0 && (
+                      <div className="subchapter-section">
+                        {cap.attributes.subnivel.map((subcap) => (
+                          <div key={subcap.id} className="subchapter">
+                            <h4
+                              onClick={() => handleSubChapterNavigation(subcap.id)}
+                              style={{ cursor: 'pointer', color: activeSubChapter === subcap.id ? 'blue' : 'black' }}
+                            >
+                              {subcap.titulo_secao}
+                            </h4>
+                            {activeSubChapter === subcap.id && (
+                              <ContentConverter data={JSON.parse(subcap.texto_conteudo)} />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     {cap.attributes.referencias && cap.attributes.referencias.length > 0 && cap.attributes.referencias[0].descricao != null && (
                       <div className="references-section">
                         <h3>Instituição</h3>
@@ -102,7 +117,10 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
           </article>
         </div>
         <div className="table-of-contents">
-          <TableOfContents key={activeTitle} headerBlocks={headerBlocks} />
+          <TableOfContents
+            subchapters={subchaptersList}
+            onClick={(id) => handleSubChapterNavigation(id)}
+          />
         </div>
       </div>
       <nav className="pagination-nav docusaurus-mt-lg" aria-label="Páginas de documentação" style={{ zIndex: 99999 }}>
