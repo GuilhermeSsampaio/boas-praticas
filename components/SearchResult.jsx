@@ -3,7 +3,7 @@ export const SearchResult = ({ result }) => {
     <div
       className="search-result"
     >
-      {result.attributes.title}
+      {result.attributes.titulo}
     </div>
   );
 };

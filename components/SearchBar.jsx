@@ -1,30 +1,50 @@
 import { useState, useEffect } from "react";
 
+const API_URLS = [
+  'https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*',
+  'https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*',
+  'https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*',
+  'https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*'
+];
+
 export const SearchBar = ({ setResults }) => {
   const [input, setInput] = useState("");
   const [typingTimeout, setTypingTimeout] = useState(null);
   const [showNoResultsMessage, setShowNoResultsMessage] = useState(false);
 
-  const fetchData = (value) => {
-    fetch("https://tecnofam-strapi.cpao.embrapa.br/api/capitulos")
-      .then((response) => response.json())
-      .then((data) => {
-        const results = data.data.filter((capitulo) => {
-          return (
-            value &&
-            capitulo.attributes &&
-            capitulo.attributes.title &&
-            capitulo.attributes.title.toLowerCase().includes(value.toLowerCase())
-          );
-        });
-        setResults(results);
-        setShowNoResultsMessage(results.length === 0 && value.trim() !== ""); 
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar dados:", error);
-        setResults([]);
-        setShowNoResultsMessage(true);
-      });
+  const fetchData = async (value) => {
+    const allResults = [];
+
+    try {
+      // Iterar sobre todas as URLs e buscar os dados
+      for (const url of API_URLS) {
+        const response = await fetch(url);
+        if (response.ok) {
+          const data = await response.json();
+          const filteredResults = data.data.filter((capitulo) => {
+            return (
+              capitulo.attributes &&
+              capitulo.attributes.titulo &&
+              capitulo.attributes.titulo.toLowerCase().includes(value.toLowerCase())
+            );
+          });
+
+          allResults.push(...filteredResults);
+        } else {
+          throw new Error('Falha na requisição. Código de status: ' + response.status);
+        }
+      }
+
+      // Remover duplicados com base no título
+      const uniqueResults = Array.from(new Map(allResults.map(item => [item.attributes.titulo, item])).values());
+
+      setResults(uniqueResults);
+      setShowNoResultsMessage(uniqueResults.length === 0 && value.trim() !== "");
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+      setResults([]);
+      setShowNoResultsMessage(true);
+    }
   };
 
   const handleChange = (value) => {
@@ -44,7 +64,7 @@ export const SearchBar = ({ setResults }) => {
   useEffect(() => {
     setResults([]);
     setShowNoResultsMessage(false);
-  }, [input]);
+  }, [input, setResults]);
 
   return (
     <div className="input-wrapper">
