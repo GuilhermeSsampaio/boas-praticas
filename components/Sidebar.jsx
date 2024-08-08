@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Logo from '../public/logo.svg';
 import { useRouter } from 'next/router';
+import TocSidebar from './TocSidebar';
+import TableOfContents from './TocSidebar';
 
 const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) => {
     const [collections, setCollections] = useState([]);
@@ -163,27 +165,9 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                             )}
                                                         </div>
                                                         {activeChapter === item.id && item.attributes.subnivel && (
-                                                            <ul className="list-group list-group-flush mx-2 py-1">
-                                                                Abra o capítulo e acesse:
-                                                                {item.attributes.subnivel.map((subItem) => (
-
-                                                                    <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}   
-                                                                     ref={(el) => (subChapterRefs.current[subItem.id] = el)}
-                                                                     id={`subcapitulo_${subItem.id}`}
-                                                                    >
-                                                                                                                                                    
-
-                                                                        <a 
-                                                                            href={`#subcapitulo_${subItem.id}`}
-                                                                            // onClick={(e) => {
-                                                                            //     e.preventDefault();
-                                                                            // }}
-                                                                        >
-                                                                            {subItem.titulo_secao}
-                                                                        </a>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
+                                                            // <TocSidebar headerBlocks={null}/>
+                                                            // <TableOfContents headerBlocks={null}/>
+                                                            <TocSidebar headerBlocks={null}/>
                                                         )}
                                                     </li>
                                                 ))}

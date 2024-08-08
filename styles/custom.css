@@ -50,6 +50,29 @@ hr {
     margin-right: 8px;
 }
 
+/* Estilo para os itens da TOC */
+.toc-item {
+    margin-bottom: 10px; /* Espaçamento entre os itens */
+    padding: 5px 0; /* Espaçamento interno dos itens */
+    list-style-type: none; /* Remove os marcadores de lista */
+}
+
+/* Estilo para os links da TOC */
+.toc-link {
+    text-decoration: none; /* Remove o sublinhado dos links */
+    color: #007bff; /* Cor do texto dos links */
+    font-size: 16px; /* Tamanho da fonte dos links */
+}
+
+/* Estilo para os itens de nível 2 */
+.h2-toc-item {
+    font-weight: bold; /* Negrito para itens de nível 2 */
+}
+
+/* Estilo para os itens de nível 3 */
+.h3-toc-item {
+    padding-left: 20px; /* Indentação para itens de nível 3 */
+}
 
 .container-autors {
     min-height: 80vh;
