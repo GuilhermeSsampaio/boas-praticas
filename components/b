@@ -37,7 +37,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                     const firstCollection = collectionsData[0];
                     setActiveCollection(firstCollection.id);
                     setActiveChapter(firstCollection.data.data[0].id);
-                    router.push(`#collection_${firstCollection.id}#capitulo_${firstCollection.data.data[0].id}`, undefined, { shallow: true });
+                    router.push(`#capitulo_${firstCollection.data.data[0].id}`, undefined, { shallow: true });
                     onSelectCollection(firstCollection.id); // Notifica o pai sobre a seleção
                 }
             } catch (error) {
@@ -68,9 +68,9 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
         handleToggle(collectionId);
     };
 
-    const handleChapterClick = (chapterId, collectionId) => {
+    const handleChapterClick = (chapterId) => {
         setActiveChapter(chapterId);
-        router.push(`#collection_${collectionId}#capitulo_${chapterId}`, undefined, { shallow: true });
+        router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
         closeSidebar();
     };
 
@@ -121,10 +121,10 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                     >
                                                         <div className="d-flex justify-content-between align-items-center">
                                                             <a 
-                                                                href={`#collection_${collection.id}#capitulo_${item.id}`}
+                                                                href={`#capitulo_${item.id}`}
                                                                 onClick={(e) => {
                                                                     e.preventDefault(); // Previne o comportamento padrão do link
-                                                                    handleChapterClick(item.id, collection.id); // Navega diretamente para o capítulo
+                                                                    handleChapterClick(item.id); // Navega diretamente para o capítulo
                                                                 }}
                                                             >
                                                                 {item.attributes.titulo}
