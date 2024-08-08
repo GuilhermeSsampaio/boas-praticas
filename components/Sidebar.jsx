@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -32,13 +32,12 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
 
                 setCollections(collectionsData);
 
-                // Verificar se a coleção ativa e o capítulo ativo estão definidos
                 if (collectionsData.length > 0 && !activeCollection && !activeChapter) {
                     const firstCollection = collectionsData[0];
                     setActiveCollection(firstCollection.id);
                     setActiveChapter(firstCollection.data.data[0].id);
                     router.push(`#collection_${firstCollection.id}#capitulo_${firstCollection.data.data[0].id}`, undefined, { shallow: true });
-                    onSelectCollection(firstCollection.id); // Notifica o pai sobre a seleção
+                    onSelectCollection(firstCollection.id);
                 }
             } catch (error) {
                 console.error('Erro ao buscar as coleções', error);
@@ -60,12 +59,12 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
 
     const handleToggle = (collectionId) => {
         setActiveCollection(activeCollection === collectionId ? null : collectionId);
-        setActiveChapter(null); // Resetar capítulo ativo ao mudar a coleção ativa
-        handleChapterClick(collections.find(collection => collection.id === collectionId).data.data[0].id, collectionId); // Navegar para o primeiro capítulo da coleção
+        setActiveChapter(null);
+        handleChapterClick(collections.find(collection => collection.id === collectionId).data.data[0].id, collectionId);
     };
 
     const handleItemClick = (collectionId) => {
-        onSelectCollection(collectionId); // Notifica o pai sobre a seleção
+        onSelectCollection(collectionId);
         handleToggle(collectionId);
     };
 
@@ -77,11 +76,25 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
 
     const handleSubChapterClick = (subChapterId) => {
         router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
+        setTimeout(() => {
+            const subChapterElement = document.getElementById(subChapterId);
+            if (subChapterElement) {
+                subChapterElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
         closeSidebar();
     };
 
     const toggleSubChapters = (chapterId) => {
         setActiveChapter(activeChapter === chapterId ? null : chapterId);
+    };
+
+    const subChapterRefs = useRef({});
+
+    const scrollToSubChapter = (id) => {
+        if (subChapterRefs.current[id]) {
+            subChapterRefs.current[id].scrollIntoView({ behavior: 'smooth' });
+        }
     };
 
     return (
@@ -105,7 +118,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                             ) : (
                                 collections.map((collection) => (
                                     <div key={collection.id}>
-                                        <a 
+                                        <a
                                             className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ripple ${activeCollection === collection.id ? '' : 'collapsed'}`}
                                             onClick={() => handleItemClick(collection.id)}
                                         >
@@ -119,13 +132,14 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                         key={item.id} 
                                                         className={`list-group-item py-2 ${item.attributes.subnivel && item.attributes.subnivel.length > 0 ? 'chapter-with-subchapters' : ''}`}
                                                         style={{ cursor: 'pointer' }}
+                                                        id={`capitulo_${item.id}`}
                                                     >
                                                         <div className="d-flex justify-content-between align-items-center">
                                                             <a 
                                                                 href={`#collection_${collection.id}#capitulo_${item.id}`}
                                                                 onClick={(e) => {
-                                                                    e.preventDefault(); // Previne o comportamento padrão do link
-                                                                    handleChapterClick(item.id, collection.id); // Navega diretamente para o capítulo
+                                                                    e.preventDefault();
+                                                                    handleChapterClick(item.id, collection.id);
                                                                 }}
                                                             >
                                                                 {item.attributes.titulo}
@@ -136,12 +150,12 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                                     <div 
                                                                         className={`icon-box`}
                                                                         onClick={(e) => {
-                                                                            e.stopPropagation(); // Previne que o evento de clique no link seja acionado
-                                                                            toggleSubChapters(item.id); // Alterna a visibilidade dos subcapítulos
+                                                                            e.stopPropagation();
+                                                                            toggleSubChapters(item.id);
                                                                         }}
                                                                         style={{ cursor: 'pointer' }}
                                                                     >
-                                                                        <i 
+                                                                        <i
                                                                             className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'} icon-deg ${activeChapter === item.id ? 'icon-deg-active icon-deg-down' : 'icon-deg-right'}`}
                                                                         ></i>
                                                                     </div>
@@ -150,14 +164,20 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                         </div>
                                                         {activeChapter === item.id && item.attributes.subnivel && (
                                                             <ul className="list-group list-group-flush mx-2 py-1">
+                                                                Abra o capítulo e acesse:
                                                                 {item.attributes.subnivel.map((subItem) => (
-                                                                    <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
+
+                                                                    <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}   
+                                                                     ref={(el) => (subChapterRefs.current[subItem.id] = el)}
+                                                                     id={`subcapitulo_${subItem.id}`}
+                                                                    >
+                                                                                                                                                    
+
                                                                         <a 
                                                                             href={`#subcapitulo_${subItem.id}`}
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault(); // Previne o comportamento padrão do link
-                                                                                handleSubChapterClick(subItem.id); // Atualiza a URL para o subcapítulo selecionado
-                                                                            }}
+                                                                            // onClick={(e) => {
+                                                                            //     e.preventDefault();
+                                                                            // }}
                                                                         >
                                                                             {subItem.titulo_secao}
                                                                         </a>

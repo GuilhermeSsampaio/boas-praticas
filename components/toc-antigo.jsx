@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 const TableOfContents = ({ headerBlocks }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [activeSubChapter, setActiveSubChapter] = useState(null);
 
     const toggleContent = () => {
         setIsExpanded(!isExpanded);

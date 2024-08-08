@@ -85,10 +85,10 @@ export const Capitulos = () => {
     }, [activeTitle]);
 
     const scrollToTop = () => {
-        // window.scrollTo({
-        //     top: 0,
-        //     behavior: 'smooth',
-        // });
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
     };
 
     const handleSelectCollection = (collectionId) => {

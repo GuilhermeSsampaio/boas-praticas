@@ -91,9 +91,8 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
                             >
                               {subcap.titulo_secao}
                             </h4>
-                            {activeSubChapter === subcap.id && (
                               <ContentConverter data={JSON.parse(subcap.texto_conteudo)} />
-                            )}
+                            
                           </div>
                         ))}
                       </div>
@@ -118,6 +117,7 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
         </div>
         <div className="table-of-contents">
           <TableOfContents
+          headerBlocks={headerBlocks}
             subchapters={subchaptersList}
             onClick={(id) => handleSubChapterNavigation(id)}
           />
