@@ -61,6 +61,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
     const handleToggle = (collectionId) => {
         setActiveCollection(activeCollection === collectionId ? null : collectionId);
         setActiveChapter(null); // Resetar capítulo ativo ao mudar a coleção ativa
+        handleChapterClick(collections.find(collection => collection.id === collectionId).data.data[0].id, collectionId); // Navegar para o primeiro capítulo da coleção
     };
 
     const handleItemClick = (collectionId) => {
