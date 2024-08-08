@@ -157,7 +157,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                                             // href={`#subcapitulo_${subItem.id}`}
                                                                             onClick={(e) => {
                                                                                 e.preventDefault(); // Previne o comportamento padrão do link
-                                                                                handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
+                                                                                // handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
                                                                             }}
                                                                         >
                                                                             {subItem.titulo_secao}
