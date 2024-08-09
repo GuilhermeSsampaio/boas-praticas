@@ -16,13 +16,13 @@ const TocSidebar = ({ headerBlocks }) => {
         headings.forEach((heading) => {
             const openLevel = parseInt(heading.tagName.substr(1));
             const titleText = heading.textContent;
-            const anchor = titleText.replace(/ /g, "_");
+            const anchore = titleText.replace(/ /g, "_");
 
             const tocItem = document.createElement("li");
             tocItem.classList.add("toc-item"); // Adiciona a classe CSS
 
             const tocLink = document.createElement("a");
-            tocLink.href = `#${anchor}`;
+            tocLink.href = `#${anchore}`;
             tocLink.textContent = titleText;
             tocLink.classList.add("toc-link"); // Adiciona a classe CSS
             tocItem.appendChild(tocLink);
@@ -35,7 +35,7 @@ const TocSidebar = ({ headerBlocks }) => {
 
             tocList.appendChild(tocItem);
 
-            heading.innerHTML = `<a id="${anchor}" href="#${anchor}">${heading.innerHTML}</a>`;
+            heading.innerHTML = `<a id="${anchore}" href="#${anchore}">${heading.innerHTML}</a>`;
         });
     }, [headerBlocks]);
 
