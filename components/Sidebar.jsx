@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Logo from '../public/logo.svg';
 import { useRouter } from 'next/router';
+import TocSidebar from './TocSidebar';
 
 const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) => {
     const [collections, setCollections] = useState([]);
@@ -149,19 +150,22 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                         </div>
                                                         {activeChapter === item.id && item.attributes.subnivel && (
                                                             <ul className="list-group list-group-flush mx-2 py-1">
-                                                            <p>Abra o capítulo acima para navegar em:</p>
 
                                                                 {item.attributes.subnivel.map((subItem) => (
-                                                                    <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
-                                                                        <a 
-                                                                            // href={`#subcapitulo_${subItem.id}`}
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault(); // Previne o comportamento padrão do link
-                                                                                // handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
-                                                                            }}
-                                                                        >
-                                                                            {subItem.titulo_secao}
-                                                                        </a>
+                                                                    // <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
+                                                                    //     <a 
+                                                                    //         // href={`#subcapitulo_${subItem.id}`}
+                                                                    //         onClick={(e) => {
+                                                                    //             e.preventDefault(); // Previne o comportamento padrão do link
+                                                                    //             // handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
+                                                                    //         }}
+                                                                    //     >
+                                                                    //         {subItem.titulo_secao}
+                                                                    //     </a>
+                                                                    // </li>
+                                                                <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
+
+                                                                    <TocSidebar className="list-group-item py-2" style={{ cursor: 'pointer' }} headerBlocks={subItem.titulo_secao} />
                                                                     </li>
                                                                 ))}
                                                             </ul>
