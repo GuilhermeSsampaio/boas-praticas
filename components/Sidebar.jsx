@@ -13,6 +13,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
     const [showSummary, setShowSummary] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+    var LogoIFEmbrapa = require('../public/logo-if-embrapa.png');
 
     useEffect(() => {
         const fetchCollections = async () => {
@@ -91,14 +92,19 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                     <div id="summary" className="list-group list-group-flush mt-2 py-2 menu_SIkG" style={{ display: showSummary ? 'block' : 'none' }}>
                         <div className='logo-container-fixed'>
                             <div className="logo-container d-flex align-items-center justify-content-between">
-                                <Link href="/home">
-                                    <Image className="img-sidebar-top mx-3" src={Logo} alt="logo Embrapa" width={45} height={46} priority />
-                                </Link>
+                            <ul className="navbar-nav d-flex links-logo-ifembrapa flex-row mx-1">
+                                {/* Logo IF / Embrapa Dentro do Menu */}
+                                <li className="nav-item">
+                                    <Link href="/home">
+                                        <Image src={LogoIFEmbrapa} className='img-navbar-menu me-3' width="100%" height={46} alt="logo Embrapa com letras em azul com um simbolo verde, sendo que as letras em cima do simbolo são brancas" priority/>
+                                    </Link>
+                                </li>
+                            </ul>
                                 <button id="btn-close-sidebar" type="button" className="btn-close btn-close-dark btn-close-cap" aria-label="Close" onClick={() => { setIsOffcanvasOpen(false); setShowSummary(true); }}></button>
                             </div>
                         </div>
                         <hr className="featurette-divider line-menu"></hr>
-                        <button type="button" className="clean-btn navbar-sidebar__back" id="back-button" onClick={() => setShowSummary(true)}>← Voltar para o menu principal</button>
+                        {/* <button type="button" className="clean-btn navbar-sidebar__back" id="back-button" onClick={() => setShowSummary(true)}>← Voltar para o menu principal</button> */}
                         <div>
                             {isLoading ? (
                                 <div className="list-group-item">Carregando...</div>
