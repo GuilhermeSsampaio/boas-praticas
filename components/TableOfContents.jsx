@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-const TableOfContents = ({ headerBlocks }) => {
+const TableOfContents = ({ headerBlocks: collections }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [activeSubChapter, setActiveSubChapter] = useState(null);
-
+    console.log(collections);
     const toggleContent = () => {
         setIsExpanded(!isExpanded);
     };
@@ -34,7 +34,7 @@ const TableOfContents = ({ headerBlocks }) => {
 
             heading.innerHTML = `<a id="${anchor}" href="#${anchor}">${heading.innerHTML}</a>`;
         });
-    }, [headerBlocks]);
+    }, [collections]);
 
     return (
         <div className="container-xxl bd-gutter mt-3 my-md-4 bd-layout">
@@ -49,7 +49,8 @@ const TableOfContents = ({ headerBlocks }) => {
                         aria-controls="toc"
                         onClick={toggleContent}
                     >
-                        Nessa página{" "}
+                       
+                        Subcapítulos: {" "}
                         <i
                             className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`}
                             style={{ fontSize: '18px' }}

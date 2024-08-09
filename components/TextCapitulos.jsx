@@ -116,11 +116,14 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
           </article>
         </div>
         <div className="table-of-contents">
+          {subchaptersList.length > 0 && (
           <TableOfContents
-          headerBlocks={headerBlocks}
+          headerBlocks={subchaptersList}
+          
             subchapters={subchaptersList}
             onClick={(id) => handleSubChapterNavigation(id)}
           />
+          )}
         </div>
       </div>
       <nav className="pagination-nav docusaurus-mt-lg" aria-label="Páginas de documentação" style={{ zIndex: 99999 }}>

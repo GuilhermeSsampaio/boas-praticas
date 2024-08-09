@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Logo from '../public/logo.svg';
 import { useRouter } from 'next/router';
+import { close } from '@sentry/nextjs';
 
 const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) => {
     const [collections, setCollections] = useState([]);
@@ -147,7 +148,8 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                                 </>
                                                             )}
                                                         </div>
-                                                        {activeChapter === item.id && item.attributes.subnivel && (
+                                                        {activeChapter === item.id && item.attributes.subnivel && item.attributes.subnivel.length >0 &&(
+                                                            // console.log(item.attributes.subnivel.length),
                                                             <ul className="list-group list-group-flush mx-2 py-1">
                                                             <p>Abra o capítulo acima para navegar em:</p>
 
@@ -157,7 +159,8 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                                             // href={`#subcapitulo_${subItem.id}`}
                                                                             onClick={(e) => {
                                                                                 e.preventDefault(); // Previne o comportamento padrão do link
-                                                                                // handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
+                                                                                handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
+                                                                                closeSidebar();
                                                                             }}
                                                                         >
                                                                             {subItem.titulo_secao}
