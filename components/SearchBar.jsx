@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 const API_URLS = [
-  'https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*',
-  'https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*',
-  'https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*',
-  'https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*'
+  { id: 1, url: 'https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*' },
+  { id: 2, url: 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*' },
+  { id: 3, url: 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*' },
+  { id: 4, url: 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*' }
 ];
 
 export const SearchBar = ({ setResults }) => {
@@ -14,10 +14,9 @@ export const SearchBar = ({ setResults }) => {
 
   const fetchData = async (value) => {
     const allResults = [];
-
+  
     try {
-      // Iterar sobre todas as URLs e buscar os dados
-      for (const url of API_URLS) {
+      for (const { id, url } of API_URLS) {
         const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
@@ -28,16 +27,21 @@ export const SearchBar = ({ setResults }) => {
               capitulo.attributes.titulo.toLowerCase().includes(value.toLowerCase())
             );
           });
-
-          allResults.push(...filteredResults);
+  
+          // Adicionar a coleção a cada item de resultado
+          const resultsWithCollection = filteredResults.map(item => ({
+            ...item,
+            collection: id
+          }));
+  
+          allResults.push(...resultsWithCollection);
         } else {
-          throw new Error('Falha na requisição. Código de status: ' + response.status);
+          console.error('Falha na requisição. Código de status:', response.status);
         }
       }
-
-      // Remover duplicados com base no título
+  
       const uniqueResults = Array.from(new Map(allResults.map(item => [item.attributes.titulo, item])).values());
-
+  
       setResults(uniqueResults);
       setShowNoResultsMessage(uniqueResults.length === 0 && value.trim() !== "");
     } catch (error) {

@@ -68,16 +68,18 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
     const handleItemClick = (collectionId) => {
         onSelectCollection(collectionId); // Notifica o pai sobre a seleção
         handleToggle(collectionId);
+        router.push(`#collection_${collectionId}#capitulo_${1}`, undefined, { shallow: true });
+
     };
 
-    const handleChapterClick = (chapterId) => {
+    const handleChapterClick = (collectionId, chapterId) => {
         setActiveChapter(chapterId);
-        router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
+        router.push(`#collection_${collectionId}#capitulo_${chapterId}`, undefined, { shallow: true });
         closeSidebar();
     };
 
-    const handleSubChapterClick = (subChapterId) => {
-        router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
+    const handleSubChapterClick = (collectionId, subChapterId) => {
+        router.push(`/collection/${collectionId}/#subcapitulo_${subChapterId}`, undefined, { shallow: true });
         closeSidebar();
     };
 
@@ -131,7 +133,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) =>
                                                                 href={`#capitulo_${item.id}`}
                                                                 onClick={(e) => {
                                                                     e.preventDefault(); // Previne o comportamento padrão do link
-                                                                    handleChapterClick(item.id); // Navega diretamente para o capítulo
+                                                                    handleChapterClick(collection.id,item.id); // Navega diretamente para o capítulo
                                                                 }}
                                                             >
                                                                 {item.attributes.titulo}
