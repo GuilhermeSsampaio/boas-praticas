@@ -20,6 +20,8 @@ export const Capitulos = () => {
     const [data, setData] = useState([]);
     const [activeTitle, setActiveTitle] = useState(null);
     const [currentCollection, setCurrentCollection] = useState(null);
+    const [activeCollection, setActiveCollection] = useState(null);
+
 
     const handleToggleBackDrop = () => {
         setIsOffcanvasOpen((prevState) => !prevState);
@@ -121,6 +123,8 @@ export const Capitulos = () => {
                     isOffcanvasOpen={isOffcanvasOpen}
                     setIsOffcanvasOpen={setIsOffcanvasOpen}
                     onSelectCollection={handleSelectCollection}
+                    activeCollection={activeCollection}
+                    setActiveCollection={setActiveCollection}
                 />
 
                 <nav id="main-navbar" className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
@@ -147,8 +151,10 @@ export const Capitulos = () => {
                                 <form className="d-flex rounded-pill position-relative first-form-search" role="search">
                                     <div className="search-bar-container p-1">
                                         <SearchBar setResults={setResults} />
-                                        {results.length > 0 && <SearchResultsList results={results} handleCloseResults={handleCloseResults} />}
-                                    </div>
+                                        {results.length > 0 && <SearchResultsList results={results} handleCloseResults={handleCloseResults}
+                                            onSelectCollection={handleSelectCollection} setActiveCollection={setCurrentCollection} setActiveChapter={setActiveTitle}
+                                            activeCollection={activeCollection}
+                                        />}                                    </div>
                                 </form>
                             </div>
                             <li className="nav-item">
@@ -161,7 +167,10 @@ export const Capitulos = () => {
                                 <div className="input-group hide-form-search">
                                     <div className="search-bar-container">
                                         <SearchBar setResults={setResults} />
-                                        {results.length > 0 && <SearchResultsList results={results} handleCloseResults={handleCloseResults} />}
+                                        {results.length > 0 && <SearchResultsList results={results} handleCloseResults={handleCloseResults}
+                                            onSelectCollection={handleSelectCollection} setActiveCollection={setCurrentCollection} setActiveChapter={setActiveTitle}
+                                            activeCollection={activeCollection}
+                                        />}
                                     </div>
                                 </div>
                             </form>

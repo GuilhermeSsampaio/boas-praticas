@@ -6,9 +6,8 @@ import Logo from '../public/logo.svg';
 import { useRouter } from 'next/router';
 import { close } from '@sentry/nextjs';
 
-const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection }) => {
+const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, activeCollection, setActiveCollection }) => {
     const [collections, setCollections] = useState([]);
-    const [activeCollection, setActiveCollection] = useState(null);
     const [activeChapter, setActiveChapter] = useState(null);
     const [showSummary, setShowSummary] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
