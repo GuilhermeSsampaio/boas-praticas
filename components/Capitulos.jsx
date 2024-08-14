@@ -8,6 +8,7 @@ import TextCapitulos from './TextCapitulos';
 import { SearchBar } from "./SearchBar.jsx";
 import { SearchResultsList } from "./SearchResultsList.jsx";
 import Sidebar from './Sidebar.jsx';
+import BreadcrumbsItem from './BreadCrumbsItem.jsx';
 import { Footer } from './Footer.jsx';
 
 export const Capitulos = () => {
@@ -115,7 +116,7 @@ export const Capitulos = () => {
         <>
             <Head>
                 <meta name="referrer" content="no-referrer" />
-                <title>Boas praticas</title>
+                <title>Boas Práticas</title>
             </Head>
 
             <div className="container-wrapper">
@@ -154,7 +155,8 @@ export const Capitulos = () => {
                                         {results.length > 0 && <SearchResultsList results={results} handleCloseResults={handleCloseResults}
                                             onSelectCollection={handleSelectCollection} setActiveCollection={setCurrentCollection} setActiveChapter={setActiveTitle}
                                             activeCollection={activeCollection}
-                                        />}                                    </div>
+                                        />}                                    
+                                    </div>
                                 </form>
                             </div>
                             <li className="nav-item">
@@ -195,15 +197,10 @@ export const Capitulos = () => {
                                         <meta itemProp="position" content="1" />
                                         <i className="fas fa-chevron-right" style={{ fontSize: '10px' }}></i>
                                     </li>
-                                    <li className="breadcrumbs__item breadcrumbs__item--active">
-                                        <span className="breadcrumbs__link" itemProp="name">
-                                            {displayedTitle}
-                                        </span>
-                                        <meta itemProp="position" content="2" />
-                                    </li>
+                                    <BreadcrumbsItem displayedTitle={displayedTitle} />
                                 </ul>
                             </nav>
-                            <section className="home-section right-sidebar" style={{ marginTop: 30 }}>
+                            <section className="home-section right-sidebar" style={{ marginTop: '30px' }}>
                                 <div id="contents" className="bd-content ps-lg-2">
                                     <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} />
                                 </div>
@@ -212,8 +209,17 @@ export const Capitulos = () => {
                     </div>
                 </main>
             </div>
-
-            <Footer />
+            <footer>
+                <div className="container container-footer-cap bottom-0 end-0">
+                    <div className="title-footer">
+                        <p>Embrapa Agropecuária Oeste</p>
+                    </div>
+                    <div className="description-footer">
+                        <p>Rodovia BR 163, Km 253,6, Caixa Postal 449, CEP: 79804-970, Dourados, MS</p>
+                        <p>Fone: + 55 (67) 3416-9700</p>
+                    </div>
+                </div>
+            </footer>
         </>
     );
 };

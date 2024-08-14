@@ -93,90 +93,85 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                     <div id="summary" className="list-group list-group-flush mt-2 py-2 menu_SIkG" style={{ display: showSummary ? 'block' : 'none' }}>
                         <div className='logo-container-fixed'>
                             <div className="logo-container d-flex align-items-center justify-content-between">
-                            <ul className="navbar-nav d-flex links-logo-ifembrapa flex-row mx-1">
-                                {/* Logo IF / Embrapa Dentro do Menu */}
-                                <li className="nav-item">
-                                    <Link href="/home">
-                                        <Image src={LogoIFEmbrapa} className='img-navbar-menu me-3' width="100%" height={46} alt="logo Embrapa com letras em azul com um simbolo verde, sendo que as letras em cima do simbolo são brancas" priority/>
-                                    </Link>
-                                </li>
-                            </ul>
+                                <Link href="/home">
+                                    <Image className="img-sidebar-top mx-3" src={LogoIFEmbrapa} alt="logo Embrapa com letras em azul com um símbolo verde, sendo que as letras em cima do símbolo são brancas" width="45%" height={46} priority/>
+                                </Link>
                                 <button id="btn-close-sidebar" type="button" className="btn-close btn-close-dark btn-close-cap" aria-label="Close" onClick={() => { setIsOffcanvasOpen(false); setShowSummary(true); }}></button>
                             </div>
                         </div>
                         <hr className="featurette-divider line-menu"></hr>
                         {/* <button type="button" className="clean-btn navbar-sidebar__back" id="back-button" onClick={() => setShowSummary(true)}>← Voltar para o menu principal</button> */}
                         <div>
+                            <div className="mt-1" style={{marginBottom: '8px'}}>
+                                <a className="d-flex align-items-center" style={{padding: '0.4rem 1rem', backgroundColor: '#0000000d', fontWeight: '500'}}>Introdução</a>
+                            </div>
                             {isLoading ? (
                                 <div className="list-group-item">Carregando...</div>
                             ) : (
                                 collections.map((collection) => (
                                     <div key={collection.id}>
-                                        <a 
-                                            className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ripple ${activeCollection === collection.id ? '' : 'collapsed'}`}
+                                        <p 
+                                            className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center dropdown-background ${activeCollection === collection.id ? '' : 'collapsed'}`}
                                             onClick={() => handleItemClick(collection.id)}
+                                            style={{cursor: 'pointer', marginBottom: '10px'}}
                                         >
-                                            <span className="w-100 text-primary">{collection.title}</span>{' '}
-                                            <i className={`fas fa-chevron-${activeCollection === collection.id ? 'down' : 'right'} icon-deg ${activeCollection === collection.id ? 'icon-deg-active icon-deg-down' : 'icon-deg-right'}`}></i>
-                                        </a>
+                                            <span className="w-100 text-primary" style={{fontWeight: '500'}}>{collection.title}</span>{' '}
+                                            <i 
+                                                className={`fas fa-chevron-${activeCollection === collection.id ? 'down' : 'right'} 
+                                                ${activeCollection === collection.id ? 'icon-deg-active' : 'icon-deg-right'}`}
+                                            >                                                
+                                            </i>
+                                        </p>
                                         {activeCollection === collection.id && (
-                                            <ul className="list-group list-group-flush mx-2 py-1">
+                                            <ul className="list-group list-group-flush mx-1">
                                                 {collection.data.data.map((item) => (
-                                                    <li 
-                                                        key={item.id} 
-                                                        className={`list-group-item py-2 ${item.attributes.subnivel && item.attributes.subnivel.length > 0 ? 'chapter-with-subchapters' : ''}`}
-                                                        style={{ cursor: 'pointer' }}
-                                                    >
-                                                        <div className="d-flex justify-content-between align-items-center">
-                                                            <a 
-                                                                href={`#capitulo_${item.id}`}
-                                                                onClick={(e) => {
-                                                                    e.preventDefault(); // Previne o comportamento padrão do link
-                                                                    handleChapterClick(collection.id,item.id); // Navega diretamente para o capítulo
-                                                                }}
-                                                            >
-                                                                {item.attributes.titulo}
-                                                            </a>
+                                                <li 
+                                                    key={item.id} 
+                                                    className={`list-group-item py-2 ${item.attributes.subnivel && item.attributes.subnivel.length > 0 ? 'chapter-with-subchapters' : ''}`}
+                                                    style={{ cursor: 'pointer', marginBottom: '8px', fontSize: '15px' }}
+                                                >
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <a 
+                                                            href={`#capitulo_${item.id}`}
+                                                            onClick={(e) => {
+                                                                e.preventDefault(); // Previne o comportamento padrão do link
+                                                                handleChapterClick(collection.id,item.id); // Navega diretamente para o capítulo
+                                                            }}
+                                                            className="d-flex align-items-center" 
+                                                            style={{ textDecoration: 'none', color: 'inherit' }} // Estilo opcional para o link
+                                                        >
+                                                            {item.attributes.titulo}
                                                             {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
-                                                                <>
-                                                                    <span className="separator">|</span>
-                                                                    <div 
-                                                                        className={`icon-box`}
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation(); // Previne que o evento de clique no link seja acionado
-                                                                            toggleSubChapters(item.id); // Alterna a visibilidade dos subcapítulos
-                                                                        }}
-                                                                        style={{ cursor: 'pointer' }}
-                                                                    >
-                                                                        <i 
-                                                                            className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'} icon-deg ${activeChapter === item.id ? 'icon-deg-active icon-deg-down' : 'icon-deg-right'}`}
-                                                                        ></i>
-                                                                    </div>
-                                                                </>
+                                                                <i 
+                                                                    className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'} ml-2`}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // Previne que o evento de clique no link seja acionado
+                                                                        toggleSubChapters(item.id); // Alterna a visibilidade dos subcapítulos
+                                                                    }}
+                                                                    style={{ cursor: 'pointer', paddingLeft: '10px' }}
+                                                                ></i>
                                                             )}
-                                                        </div>
-                                                        {activeChapter === item.id && item.attributes.subnivel && item.attributes.subnivel.length >0 &&(
-                                                            // console.log(item.attributes.subnivel.length),
-                                                            <ul className="list-group list-group-flush mx-2 py-1">
+                                                        </a>
+                                                    </div>
+                                                    {/* {activeChapter === item.id && item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
+                                                        <ul className="list-group list-group-flush mx-2 py-1">
                                                             <p>Abra o capítulo acima para navegar em:</p>
-
-                                                                {item.attributes.subnivel.map((subItem) => (
-                                                                    <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
-                                                                        <a 
-                                                                            // href={`#subcapitulo_${subItem.id}`}
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault(); // Previne o comportamento padrão do link
-                                                                                handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
-                                                                                closeSidebar();
-                                                                            }}
-                                                                        >
-                                                                            {subItem.titulo_secao}
-                                                                        </a>
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        )}
-                                                    </li>
+                                                            {item.attributes.subnivel.map((subItem) => (
+                                                                <li key={subItem.id} className="list-group-item py-2" style={{ cursor: 'pointer' }}>
+                                                                    <a 
+                                                                        onClick={(e) => {
+                                                                            e.preventDefault(); // Previne o comportamento padrão do link
+                                                                            handleChapterClick(item.id); // Atualiza a URL para o subcapítulo selecionado
+                                                                            closeSidebar();
+                                                                        }}
+                                                                    >
+                                                                        {subItem.titulo_secao}
+                                                                    </a>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )} */}
+                                                </li>
                                                 ))}
                                             </ul>
                                         )}

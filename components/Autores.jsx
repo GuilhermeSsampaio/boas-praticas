@@ -47,7 +47,7 @@ export const Autores = () => {
     return (
         <>
             <Head>
-                <title>TecnofamApp</title>
+                <title>Boas Práticas</title>
             </Head>
 
             {/* Código Navbar Offcanvas */}

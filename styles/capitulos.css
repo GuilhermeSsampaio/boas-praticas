@@ -85,11 +85,14 @@ hr {
 
 .list-group-item {
   padding: 0.5rem 1rem !important;
-  line-height: 1.25;
 }
 
 .list-group-item.active{
   background-color: #eef0f2 !important;
+}
+
+.dropdown-background {
+  background-color: #0000000d !important;
 }
 
 .list-group-item a {
@@ -189,7 +192,7 @@ hr {
 
 .breadcrumbs__item {
   display: inline-block;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .breadcrumbs__link {
@@ -198,7 +201,6 @@ hr {
   font-size: 12.2px;
   font-weight: 400;
   text-decoration: none;
-  margin-right: 15px;
   border-radius: 1.5rem;
   padding: calc(0.4rem * 0.8) calc(0.8rem * 0.8);
   text-decoration: none;
@@ -493,9 +495,19 @@ hr {
     flex-grow: 1;
     max-width: calc(100% - 200px) !important;
   }
+  footer .container-footer {
+    margin-left: 300px; /* Valor para telas maiores */
+  }
 }
 
-@media screen and (min-width: 992px) and (max-width: 1060px) {
+@media screen and (min-width: 1060px) and (max-width: 1439px) {
+  footer .container-footer {
+    margin-left: 200px; /* Valor para telas maiores */
+  }
+}
+
+
+@media screen and (min-width: 992px) and (max-width: 1059px) {
   .text-item-link a {
     font-size: 14px !important;
     margin-right: 0 !important;
@@ -505,6 +517,9 @@ hr {
   }
   .rounded-pill {
     margin-top: -14px !important;
+  }
+  footer .container-footer {
+    margin-left: 180px !important; /* Valor para telas maiores */
   }
 }
 
@@ -664,7 +679,7 @@ hr {
     height: 55;
   }
   .breadcrumbs__link {
-    font-size: 11px;
+    font-size: 11px !important;
     padding: 1px;
   }
 }
