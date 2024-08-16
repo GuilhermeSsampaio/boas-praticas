@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
-import Logo from '../public/logo.svg';
 import { useRouter } from 'next/router';
-import { close } from '@sentry/nextjs';
 
 const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, activeCollection, setActiveCollection }) => {
     const [collections, setCollections] = useState([]);
@@ -59,35 +57,52 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
         setIsOffcanvasOpen(false);
     }
 
-    const handleToggle = (collectionId) => {
+    const updateUrlWithCollection = (collectionId) => {
+        const url = new URL(window.location);
+        url.hash = `#collection_${collectionId}`;
+        window.history.pushState({}, '', url);
+    };
+
+    const handleToggle = useCallback((collectionId) => {
         setActiveCollection(activeCollection === collectionId ? null : collectionId);
         setActiveChapter(null); // Resetar capítulo ativo ao mudar a coleção ativa
-    };
+        updateUrlWithCollection(collectionId); // Atualiza a URL com a coleção ativa
+    }, [activeCollection]);
 
-    const handleItemClick = (collectionId) => {
+    const handleItemClick = useCallback((collectionId) => {
         handleToggle(collectionId);
-    };
+    }, [handleToggle]);
 
-    const handleChapterClick = (collectionId, chapterId) => {
+    const handleChapterClick = useCallback((collectionId, chapterId) => {
         onSelectCollection(collectionId); // Notifica o pai sobre a seleção
         setActiveChapter(chapterId);
         router.push(`#collection_${collectionId}#capitulo_${chapterId}`, undefined, { shallow: true });
         closeSidebar();
-    };
+    }, [onSelectCollection, router]);
 
-    const handleSubChapterClick = (collectionId, subChapterId) => {
+    const handleSubChapterClick = useCallback((collectionId, subChapterId) => {
         router.push(`/collection/${collectionId}/#subcapitulo_${subChapterId}`, undefined, { shallow: true });
         closeSidebar();
-    };
+    }, [router]);
 
-    const toggleSubChapters = (chapterId) => {
+    const toggleSubChapters = useCallback((chapterId) => {
         setActiveChapter(activeChapter === chapterId ? null : chapterId);
-    };
+    }, [activeChapter]);
 
-    // Função para ordenar capítulos numericamente
-    const sortChapters = (chapters) => {
-        return chapters.sort((a, b) => a.attributes.titulo.localeCompare(b.attributes.titulo, undefined, { numeric: true }));
-    };
+    // Função para ordenar capítulos pelo id
+    const sortChapters = useCallback((chapters) => {
+        return chapters.sort((a, b) => a.id - b.id);
+    }, []);
+
+    const sortedCollections = useMemo(() => {
+        return collections.map(collection => ({
+            ...collection,
+            data: {
+                ...collection.data,
+                data: sortChapters(collection.data.data)
+            }
+        }));
+    }, [collections, sortChapters]);
 
     return (
         <div>
@@ -110,7 +125,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                             {isLoading ? (
                                 <div className="list-group-item">Carregando...</div>
                             ) : (
-                                collections.map((collection) => (
+                                sortedCollections.map((collection) => (
                                     <div key={collection.id}>
                                         <p 
                                             className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center dropdown-background ${activeCollection === collection.id ? '' : 'collapsed'}`}
@@ -126,7 +141,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                                         </p>
                                         {activeCollection === collection.id && (
                                             <ul className="list-group list-group-flush mx-1">
-                                                {sortChapters(collection.data.data).map((item) => (
+                                                {collection.data.data.map((item) => (
                                                 <li 
                                                     key={item.id} 
                                                     className={`list-group-item py-2 ${item.attributes.subnivel && item.attributes.subnivel.length > 0 ? 'chapter-with-subchapters' : ''}`}
@@ -160,4 +175,4 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
     );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);
