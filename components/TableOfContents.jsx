@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-const TableOfContents = ({ headerBlocks: collections }) => {
+const TableOfContents = ({ headerBlocks: collections, onSubChapterClick }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [activeSubChapter, setActiveSubChapter] = useState(null);
-    console.log(collections);
+
     const toggleContent = () => {
         setIsExpanded(!isExpanded);
     };
@@ -22,6 +21,10 @@ const TableOfContents = ({ headerBlocks: collections }) => {
             const tocLink = document.createElement("a");
             tocLink.href = `#${anchor}`;
             tocLink.textContent = titleText;
+            tocLink.onclick = (e) => {
+                e.preventDefault();
+                onSubChapterClick(anchor);
+            };
             tocItem.appendChild(tocLink);
 
             if (openLevel === 2) {
@@ -34,7 +37,7 @@ const TableOfContents = ({ headerBlocks: collections }) => {
 
             heading.innerHTML = `<a id="${anchor}" href="#${anchor}">${heading.innerHTML}</a>`;
         });
-    }, [collections]);
+    }, [collections, onSubChapterClick]);
 
     return (
         <div className="container-xxl bd-gutter mt-3 my-md-4 bd-layout">
@@ -49,7 +52,6 @@ const TableOfContents = ({ headerBlocks: collections }) => {
                         aria-controls="toc"
                         onClick={toggleContent}
                     >
-                       
                         Subcapítulos: {" "}
                         <i
                             className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`}

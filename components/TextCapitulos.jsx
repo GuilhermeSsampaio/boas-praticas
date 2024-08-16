@@ -63,7 +63,15 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
             subChapterElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 100); // Ajuste o tempo conforme necessário
-};
+  };
+
+  const handleSubChapterClick = (anchor) => {
+    const subChapterElement = document.getElementById(anchor);
+    if (subChapterElement) {
+      const yOffset = -100; // Ajuste este valor conforme necessário
+      const y = subChapterElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });    }
+  };
 
   const currentIndex = lista.findIndex((cap) => cap.id === activeTitle);
   const prevChapter = lista[currentIndex - 1];
@@ -118,10 +126,8 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
         <div className="table-of-contents">
           {subchaptersList.length > 0 && (
           <TableOfContents
-          headerBlocks={subchaptersList}
-          
-            subchapters={subchaptersList}
-            onClick={(id) => handleSubChapterNavigation(id)}
+            headerBlocks={subchaptersList}
+            onSubChapterClick={handleSubChapterClick}
           />
           )}
         </div>

@@ -60,18 +60,20 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
     }
 
     const handleToggle = (collectionId) => {
+        // onSelectCollection(collectionId); // Notifica o pai sobre a seleção
         setActiveCollection(activeCollection === collectionId ? null : collectionId);
         setActiveChapter(null); // Resetar capítulo ativo ao mudar a coleção ativa
     };
 
     const handleItemClick = (collectionId) => {
-        onSelectCollection(collectionId); // Notifica o pai sobre a seleção
         handleToggle(collectionId);
-        router.push(`#collection_${collectionId}#capitulo_${1}`, undefined, { shallow: true });
-
+        // Remova ou comente a linha abaixo para cancelar a navegação automática
+        // router.push(`#collection_${collectionId}#capitulo_${1}`, undefined, { shallow: true });
     };
 
     const handleChapterClick = (collectionId, chapterId) => {
+        onSelectCollection(collectionId); // Notifica o pai sobre a seleção
+        // setActiveCollection(activeCollection === collectionId ? null : collectionId);
         setActiveChapter(chapterId);
         router.push(`#collection_${collectionId}#capitulo_${chapterId}`, undefined, { shallow: true });
         closeSidebar();
@@ -141,16 +143,16 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                                                             style={{ textDecoration: 'none', color: 'inherit' }} // Estilo opcional para o link
                                                         >
                                                             {item.attributes.titulo}
-                                                            {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
+                                                            {/* {item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
                                                                 <i 
-                                                                    className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'} ml-2`}
+                                                                    // className={`fas fa-chevron-${activeChapter === item.id ? 'down' : 'right'} ml-2`}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation(); // Previne que o evento de clique no link seja acionado
                                                                         toggleSubChapters(item.id); // Alterna a visibilidade dos subcapítulos
                                                                     }}
                                                                     style={{ cursor: 'pointer', paddingLeft: '10px' }}
                                                                 ></i>
-                                                            )}
+                                                            )} */}
                                                         </a>
                                                     </div>
                                                     {/* {activeChapter === item.id && item.attributes.subnivel && item.attributes.subnivel.length > 0 && (
