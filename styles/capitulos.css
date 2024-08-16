@@ -496,13 +496,13 @@ hr {
     max-width: calc(100% - 200px) !important;
   }
   footer .container-footer-cap {
-    margin-left: 300px; /* Valor para telas maiores */
+    margin-left: 300px !important; /* Valor para telas maiores */
   }
 }
 
 @media screen and (min-width: 1060px) and (max-width: 1439px) {
   footer .container-footer-cap {
-    margin-left: 200px; /* Valor para telas maiores */
+    margin-left: 200px !important; /* Valor para telas maiores */
   }
 }
 
