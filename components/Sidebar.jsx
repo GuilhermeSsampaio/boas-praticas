@@ -3,6 +3,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { getFromCache, saveToCache } from '../db/FetchApiOffline'; // Importe as funções de cache
 
 const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, activeCollection, setActiveCollection }) => {
     const [collections, setCollections] = useState([]);
@@ -15,6 +16,18 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
     useEffect(() => {
         const fetchCollections = async () => {
             try {
+                // Verifique se o window está definido
+                if (typeof window !== 'undefined') {
+                    // Tente obter os dados do cache
+                    const cachedCollections = await getFromCache('collections');
+                    if (cachedCollections) {
+                        setCollections(cachedCollections);
+                        setIsLoading(false);
+                        return;
+                    }
+                }
+
+                // Se os dados não estiverem no cache, faça a requisição à API
                 const responses = await Promise.all([
                     axios.get('https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*'),
                     axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*'),
@@ -30,6 +43,11 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                 ];
 
                 setCollections(collectionsData);
+
+                // Salve os dados no cache
+                if (typeof window !== 'undefined') {
+                    await saveToCache('collections', collectionsData);
+                }
 
                 // Verificar se a coleção ativa e o capítulo ativo estão definidos
                 if (collectionsData.length > 0 && !activeCollection && !activeChapter) {
@@ -47,7 +65,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
         };
 
         fetchCollections();
-    }, []);
+    }, [activeCollection, activeChapter, onSelectCollection, router]);
 
     const closeSidebar = () => {
         const sidebarMenu = document.getElementById("sidebarMenu");

@@ -3,8 +3,7 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.2.0/workbox
 
 // Rota para a API de capítulos
 workbox.routing.registerRoute(
-  // new RegExp('https://api-cartilha-teste-production.up.railway.app/api/capitulos?populate=*'),
-  new RegExp('https://tecnofam-strapi.cpao.embrapa.br/api/capitulos?populate=*'),
+  new RegExp('https://api-cartilha-teste2.onrender.com/api/capitulos?populate=*'),
   new workbox.strategies.NetworkFirst({
     cacheName: 'api-capitulos-cache',
   })
@@ -12,10 +11,41 @@ workbox.routing.registerRoute(
 
 // Rota para a API de autores
 workbox.routing.registerRoute(
-  // new RegExp('https://api-cartilha-teste-production.up.railway.app/api/autors'),
-  new RegExp('https://tecnofam-strapi.cpao.embrapa.br/api/autors?populate=*'),
+  new RegExp('https://api-cartilha-teste2.onrender.com/api/autors?populate=*'),
   new workbox.strategies.NetworkFirst({
     cacheName: 'api-autores-cache',
+  })
+);
+
+// Rota para a coleção de pesticidas e abelhas
+workbox.routing.registerRoute(
+  new RegExp('https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*'),
+  new workbox.strategies.NetworkFirst({
+    cacheName: 'api-pesticida-abelhas-cache',
+  })
+);
+
+// Rota para a coleção de boas práticas agroes
+workbox.routing.registerRoute(
+  new RegExp('https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*'),
+  new workbox.strategies.NetworkFirst({
+    cacheName: 'api-boa-pratica-agroes-cache',
+  })
+);
+
+// Rota para a coleção de boas práticas apícolas
+workbox.routing.registerRoute(
+  new RegExp('https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*'),
+  new workbox.strategies.NetworkFirst({
+    cacheName: 'api-boa-pratica-apicolas-cache',
+  })
+);
+
+// Rota para a coleção de boas práticas de comunicação
+workbox.routing.registerRoute(
+  new RegExp('https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*'),
+  new workbox.strategies.NetworkFirst({
+    cacheName: 'api-boa-pratica-comunicacaos-cache',
   })
 );
 

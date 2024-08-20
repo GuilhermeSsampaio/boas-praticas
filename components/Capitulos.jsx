@@ -10,6 +10,7 @@ import { SearchResultsList } from "./SearchResultsList.jsx";
 import Sidebar from './Sidebar.jsx';
 import BreadcrumbsItem from './BreadCrumbsItem.jsx';
 import { Footer } from './Footer.jsx';
+import { getFromCache, saveToCache } from '../db/FetchApiOffline.js';
 
 export const Capitulos = () => {
     var LogoIF = require('../public/ifms-dr-marca-2015.png');
@@ -39,7 +40,20 @@ export const Capitulos = () => {
 
     useEffect(() => {
         const loadCapitulos = async () => {
-            if (!currentCollection) return; // Não carregar se nenhuma coleção estiver selecionada
+            if (!currentCollection) return;
+
+            // Tenta obter os dados do cache primeiro
+            const cachedData = await getFromCache(currentCollection);
+            if (cachedData) {
+                setData(cachedData);
+                const chapterNumber = extractChapterNumberFromAnchor(asPath);
+                if (chapterNumber !== null) {
+                    setActiveTitle(chapterNumber);
+                } else if (cachedData.length > 0) {
+                    setActiveTitle(cachedData[0].id);
+                }
+                return; // Se encontrar no cache, para aqui
+            }
 
             const url = `https://api-cartilha-teste2.onrender.com/api/${currentCollection}?populate=*`;
 
@@ -50,16 +64,14 @@ export const Capitulos = () => {
                     const data = json.data;
                     setData(data);
 
+                    // Salva no cache para uso futuro
+                    await saveToCache(currentCollection, data);
+
                     const chapterNumber = extractChapterNumberFromAnchor(asPath);
                     if (chapterNumber !== null) {
                         setActiveTitle(chapterNumber);
-                    } else {
-                        const storedChapter = localStorage.getItem('activeChapter');
-                        if (storedChapter) {
-                            setActiveTitle(parseInt(storedChapter));
-                        } else if (data.length > 0) {
-                            setActiveTitle(data[0].id);
-                        }
+                    } else if (data.length > 0) {
+                        setActiveTitle(data[0].id);
                     }
                 } else {
                     throw new Error('Falha na requisição. Código de status: ' + response.status);
@@ -111,6 +123,8 @@ export const Capitulos = () => {
 
     const activeChapter = data.find(item => item.id === activeTitle);
     const displayedTitle = activeChapter ? activeChapter.attributes.titulo : 'Título do Capítulo';
+
+    console.log("data", data);
 
     return (
         <>
