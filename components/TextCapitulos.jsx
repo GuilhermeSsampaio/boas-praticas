@@ -4,7 +4,7 @@ import ContentConverter from './ContentConverter';
 import RefContentConverter from './RefContentConverter';
 import { useRouter } from 'next/router';
 
-const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
+const TextCapitulos = ({ lista, activeTitle, setActiveTitle, currentCollection }) => {
   const [headerBlocks, setHeaderBlocks] = useState([]);
   const [activeSubChapter, setActiveSubChapter] = useState(null);
   const [subchaptersList, setSubchaptersList] = useState([]);
@@ -49,12 +49,12 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle }) => {
   const handleNavigation = (chapterId) => {
     setActiveTitle(chapterId);
     setActiveSubChapter(null);
-    router.push(`#capitulo_${chapterId}`, undefined, { shallow: true });
+    router.push(`#collection#_${currentCollection}#capitulo_${chapterId}`, undefined, { shallow: true });
   };
 
   const handleSubChapterNavigation = (subChapterId) => {
     setActiveSubChapter(subChapterId);
-    router.push(`#subcapitulo_${subChapterId}`, undefined, { shallow: true });
+    router.push(`/collection/${currentCollection}#subcapitulo_${subChapterId}`, undefined, { shallow: true });
 
     // Garantir que o subcapítulo seja rolado para a visibilidade
     setTimeout(() => {

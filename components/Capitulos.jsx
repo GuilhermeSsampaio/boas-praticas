@@ -93,7 +93,7 @@ export const Capitulos = () => {
     useEffect(() => {
         if (activeTitle !== null) {
             scrollToTop();
-            console.log('chamnou scrol top');
+            // console.log('chamnou scrol top');
         }
     }, [activeTitle]);
 
@@ -122,7 +122,7 @@ export const Capitulos = () => {
     const activeChapter = data.find(item => item.id === activeTitle);
     const displayedTitle = activeChapter ? activeChapter.attributes.titulo : 'Título do Capítulo';
 
-    console.log("data", data);
+    // console.log("data", data);
 
     return (
         <>
@@ -214,7 +214,7 @@ export const Capitulos = () => {
                             </nav>
                             <section className="home-section right-sidebar" style={{ marginTop: '30px' }}>
                                 <div id="contents" className="bd-content ps-lg-2">
-                                    <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} />
+                                    <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} currentCollection={activeCollection} />
                                 </div>
                             </section>
                         </div>
