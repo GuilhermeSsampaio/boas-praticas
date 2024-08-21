@@ -22,12 +22,10 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                     const cachedCollections = await getFromCache('collections');
                     if (cachedCollections) {
                         setCollections(cachedCollections);
-                        setIsLoading(false);
-                        return;
                     }
                 }
 
-                // Se os dados não estiverem no cache, faça a requisição à API
+                // Faça a requisição à API para obter os dados mais recentes
                 const responses = await Promise.all([
                     axios.get('https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*'),
                     axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*'),
@@ -138,7 +136,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                         <hr className="featurette-divider line-menu"></hr>
                         <div>
                             <div className="mt-1" style={{marginBottom: '8px'}}>
-                                <a className="d-flex align-items-center" style={{padding: '0.4rem 1rem', backgroundColor: '#0000000d', fontWeight: '500'}}>Introdução</a>
+                                <a href='/IntroPage' className="d-flex align-items-center" style={{padding: '0.4rem 1rem', backgroundColor: '#0000000d', fontWeight: '500'}}>Introdução</a>
                             </div>
                             {isLoading ? (
                                 <div className="list-group-item">Carregando...</div>

@@ -24,7 +24,6 @@ export const Capitulos = () => {
     const [currentCollection, setCurrentCollection] = useState(null);
     const [activeCollection, setActiveCollection] = useState(null);
 
-
     const handleToggleBackDrop = () => {
         setIsOffcanvasOpen((prevState) => !prevState);
     };
@@ -52,7 +51,6 @@ export const Capitulos = () => {
                 } else if (cachedData.length > 0) {
                     setActiveTitle(cachedData[0].id);
                 }
-                return; // Se encontrar no cache, para aqui
             }
 
             const url = `https://api-cartilha-teste2.onrender.com/api/${currentCollection}?populate=*`;

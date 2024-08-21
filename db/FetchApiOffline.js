@@ -53,3 +53,20 @@ export async function saveToCache(key, data) {
         };
     });
 }
+
+export async function updateCache(key, data) {
+    const db = await openDatabase();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction([storeName], 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.put(data, key);
+
+        request.onsuccess = () => {
+            resolve();
+        };
+
+        request.onerror = () => {
+            reject(request.error);
+        };
+    });
+}
