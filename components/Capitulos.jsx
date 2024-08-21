@@ -10,7 +10,8 @@ import { SearchResultsList } from "./SearchResultsList.jsx";
 import Sidebar from './Sidebar.jsx';
 import BreadcrumbsItem from './BreadCrumbsItem.jsx';
 import { Footer } from './Footer.jsx';
-import { getFromCache, saveToCache } from '../db/FetchApiOffline.js';
+import { useRef } from 'react';
+
 
 export const Capitulos = () => {
     var LogoIF = require('../public/ifms-dr-marca-2015.png');
@@ -24,6 +25,7 @@ export const Capitulos = () => {
     const [currentCollection, setCurrentCollection] = useState(null);
     const [activeCollection, setActiveCollection] = useState(null);
 
+
     const handleToggleBackDrop = () => {
         setIsOffcanvasOpen((prevState) => !prevState);
     };
@@ -32,6 +34,16 @@ export const Capitulos = () => {
         setResults([]);
     };
 
+    const fetchCapitulosRef = useRef(null); // Create a ref to store the fetch function
+
+    useEffect(() => {
+        // Cleanup function to cancel previous fetch requests
+        return () => {
+            if (fetchCapitulosRef.current) {
+                fetchCapitulosRef.current.abort();
+            }
+        };
+    }, []);
     const extractChapterNumberFromAnchor = (path) => {
         const match = path.match(/#capitulo_(\d+)/);
         return match ? parseInt(match[1]) : null;
@@ -39,48 +51,32 @@ export const Capitulos = () => {
 
     useEffect(() => {
         const loadCapitulos = async () => {
-            if (!currentCollection) return;
+            if (!currentCollection) return; // Não carregar se nenhuma coleção estiver selecionada
 
-            // Tenta obter os dados do cache primeiro
-            const cachedData = await getFromCache(currentCollection);
-            if (cachedData) {
-                setData(cachedData);
-                const chapterNumber = extractChapterNumberFromAnchor(asPath);
-                if (chapterNumber !== null) {
-                    setActiveTitle(chapterNumber);
-                } else if (cachedData.length > 0) {
-                    setActiveTitle(cachedData[0].id);
-                }
-            }
+            fetchCapitulosRef.current = new AbortController(); // Create a new AbortController for each fetch
 
             const url = `https://api-cartilha-teste2.onrender.com/api/${currentCollection}?populate=*`;
 
             try {
-                const response = await fetch(url);
+                const response = await fetch(url, { signal: fetchCapitulosRef.current.signal });
                 if (response.ok) {
                     const json = await response.json();
                     const data = json.data;
                     setData(data);
 
-                    // Salva no cache para uso futuro
-                    await saveToCache(currentCollection, data);
-
-                    const chapterNumber = extractChapterNumberFromAnchor(asPath);
-                    if (chapterNumber !== null) {
-                        setActiveTitle(chapterNumber);
-                    } else if (data.length > 0) {
-                        setActiveTitle(data[0].id);
-                    }
+                    // ... rest of your logic to set activeTitle
                 } else {
                     throw new Error('Falha na requisição. Código de status: ' + response.status);
                 }
             } catch (error) {
-                console.error(error);
+                if (error.name !== 'AbortError') { // Ignore AbortError
+                    console.error(error);
+                }
             }
         };
 
         loadCapitulos();
-    }, [asPath, currentCollection]);
+    }, [currentCollection]);
 
     useEffect(() => {
         // Atualiza o capítulo ativo baseado na URL
@@ -93,7 +89,7 @@ export const Capitulos = () => {
     useEffect(() => {
         if (activeTitle !== null) {
             scrollToTop();
-            // console.log('chamnou scrol top');
+            console.log('chamnou scrol top');
         }
     }, [activeTitle]);
 
@@ -121,8 +117,6 @@ export const Capitulos = () => {
 
     const activeChapter = data.find(item => item.id === activeTitle);
     const displayedTitle = activeChapter ? activeChapter.attributes.titulo : 'Título do Capítulo';
-
-    // console.log("data", data);
 
     return (
         <>
@@ -214,7 +208,7 @@ export const Capitulos = () => {
                             </nav>
                             <section className="home-section right-sidebar" style={{ marginTop: '30px' }}>
                                 <div id="contents" className="bd-content ps-lg-2">
-                                    <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} currentCollection={activeCollection} />
+                                    <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} />
                                 </div>
                             </section>
                         </div>

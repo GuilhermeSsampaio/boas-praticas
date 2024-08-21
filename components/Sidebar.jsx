@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import axios from 'axios';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { getFromCache, saveToCache } from '../db/FetchApiOffline'; // Importe as funções de cache
+// import { useRef } from 'react';
 
 const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, activeCollection, setActiveCollection }) => {
     const [collections, setCollections] = useState([]);
@@ -13,24 +14,27 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
     const router = useRouter();
     var LogoIFEmbrapa = require('../public/logo-if-embrapa.png');
 
+    const fetchCollectionsRef = useRef(null); // Create a ref to store the fetch function
+
+    useEffect(() => {
+        // Cleanup function to cancel previous fetch requests
+        return () => {
+            if (fetchCollectionsRef.current) {
+                fetchCollectionsRef.current.abort();
+            }
+        };
+    }, []);
+
     useEffect(() => {
         const fetchCollections = async () => {
             try {
-                // Verifique se o window está definido
-                if (typeof window !== 'undefined') {
-                    // Tente obter os dados do cache
-                    const cachedCollections = await getFromCache('collections');
-                    if (cachedCollections) {
-                        setCollections(cachedCollections);
-                    }
-                }
+                fetchCollectionsRef.current = new AbortController(); // Create a new AbortController for each fetch
 
-                // Faça a requisição à API para obter os dados mais recentes
                 const responses = await Promise.all([
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*'),
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*'),
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*'),
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*')
+                    axios.get('https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*', { signal: fetchCollectionsRef.current.signal }),
+                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*', { signal: fetchCollectionsRef.current.signal }),
+                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*', { signal: fetchCollectionsRef.current.signal }),
+                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*', { signal: fetchCollectionsRef.current.signal })
                 ]);
 
                 const collectionsData = [
@@ -42,11 +46,6 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
 
                 setCollections(collectionsData);
 
-                // Salve os dados no cache
-                if (typeof window !== 'undefined') {
-                    await saveToCache('collections', collectionsData);
-                }
-
                 // Verificar se a coleção ativa e o capítulo ativo estão definidos
                 if (collectionsData.length > 0 && !activeCollection && !activeChapter) {
                     const firstCollection = collectionsData[0];
@@ -56,14 +55,16 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                     onSelectCollection(firstCollection.id); // Notifica o pai sobre a seleção
                 }
             } catch (error) {
-                console.error('Erro ao buscar as coleções', error);
+                if (error.name !== 'AbortError') { // Ignore AbortError
+                    console.error('Erro ao buscar as coleções', error);
+                }
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchCollections();
-    }, [activeCollection, activeChapter, onSelectCollection, router]);
+    }, []);
 
     const closeSidebar = () => {
         const sidebarMenu = document.getElementById("sidebarMenu");
@@ -136,7 +137,7 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                         <hr className="featurette-divider line-menu"></hr>
                         <div>
                             <div className="mt-1" style={{marginBottom: '8px'}}>
-                                <a href='/IntroPage' className="d-flex align-items-center" style={{padding: '0.4rem 1rem', backgroundColor: '#0000000d', fontWeight: '500'}}>Introdução</a>
+                                <a className="d-flex align-items-center" style={{padding: '0.4rem 1rem', backgroundColor: '#0000000d', fontWeight: '500'}}>Introdução</a>
                             </div>
                             {isLoading ? (
                                 <div className="list-group-item">Carregando...</div>
