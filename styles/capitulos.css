@@ -484,6 +484,9 @@ hr {
     flex-grow: 1;
     max-width: calc(100% - 300px) !important;
   }
+  footer .container-footer-cap {
+    margin-left: 300px !important; /* Valor para telas maiores */
+  }
 }
 
 @media screen and (min-width: 1440px) and (max-width: 1669px) {
