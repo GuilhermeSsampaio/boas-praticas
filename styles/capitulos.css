@@ -485,7 +485,7 @@ hr {
     max-width: calc(100% - 300px) !important;
   }
   footer .container-footer-cap {
-    margin-left: 300px !important; /* Valor para telas maiores */
+    margin-left: 350px !important; /* Valor para telas maiores */
   }
 }
 
