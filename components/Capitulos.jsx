@@ -25,6 +25,7 @@ export const Capitulos = () => {
     const [currentCollection, setCurrentCollection] = useState(null);
     const [activeCollection, setActiveCollection] = useState(null);
     const [isChapterLoading, setIsChapterLoading] = useState(false);
+    const [collectionsData, setCollectionsData] = useState({});
 
     const handleToggleBackDrop = () => {
         setIsOffcanvasOpen((prevState) => !prevState);
@@ -52,8 +53,14 @@ export const Capitulos = () => {
     useEffect(() => {
         const loadCapitulos = async () => {
             if (!currentCollection) return; // Não carregar se nenhuma coleção estiver selecionada
+    
+            // Verifique se a coleção já foi carregada
+            if (collectionsData[currentCollection]) {
+                setData(collectionsData[currentCollection]);
+                return;
+            }
+    
             setIsChapterLoading(true); // Inicia o carregamento do capítulo
-
             fetchCapitulosRef.current = new AbortController(); // Create a new AbortController for each fetch
     
             const url = `https://api-boas-praticas.onrender.com/api/${currentCollection}?populate=*`;
@@ -65,6 +72,12 @@ export const Capitulos = () => {
                     const data = json.data;
                     setData(data);
     
+                    // Armazene os dados da coleção carregada
+                    setCollectionsData(prevData => ({
+                        ...prevData,
+                        [currentCollection]: data
+                    }));
+    
                     // ... rest of your logic to set activeTitle
                 } else {
                     throw new Error('Falha na requisição. Código de status: ' + response.status);
@@ -73,7 +86,7 @@ export const Capitulos = () => {
                 if (error.name !== 'AbortError') { // Ignore AbortError
                     console.error(error);
                 }
-            }finally{
+            } finally {
                 setIsChapterLoading(false);
             }
         };
@@ -211,9 +224,11 @@ export const Capitulos = () => {
                             </nav>
                             <section className="home-section right-sidebar" style={{ marginTop: '30px' }}>
                                 <div id="contents" className="bd-content ps-lg-2">
-                                    {isChapterLoading ? ( <p>Carregando...</p>):(
+                                {isChapterLoading ? (
+                                    <p>Carregando...</p>
+                                ) : (
                                     <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} />
-                                    )}
+                                )}
                                 </div>
                             </section>
                         </div>
