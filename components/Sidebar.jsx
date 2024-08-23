@@ -30,18 +30,27 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
             try {
                 fetchCollectionsRef.current = new AbortController(); // Create a new AbortController for each fetch
 
-                const responses = await Promise.all([
-                    axios.get('https://api-boas-praticas.onrender.com/api/pesticida-abelhas?populate=*', { signal: fetchCollectionsRef.current.signal }),
-                    axios.get('https://api-boas-praticas.onrender.com/api/boa-pratica-agricolas', { signal: fetchCollectionsRef.current.signal }),
-                    axios.get('https://api-boas-praticas.onrender.com/api/boa-pratica-apicolas?populate=*', { signal: fetchCollectionsRef.current.signal }),
-                    axios.get('https://api-boas-praticas.onrender.com/api/boa-pratica-de-comunicacaos', { signal: fetchCollectionsRef.current.signal })
-                ]);
+                const urls = [
+                    'https://api-boas-praticas.onrender.com/api/pesticida-abelhas?populate=*',
+                    'https://api-boas-praticas.onrender.com/api/boa-pratica-agricolas',
+                    'https://api-boas-praticas.onrender.com/api/boa-pratica-apicolas?populate=*',
+                    'https://api-boas-praticas.onrender.com/api/boa-pratica-de-comunicacaos'
+                ];
+
+                const responses = await Promise.all(
+                    urls.map(url => fetch(url, { signal: fetchCollectionsRef.current.signal }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    }))
+                );
 
                 const collectionsData = [
-                    { id: 1, title: 'Pesticidas e abelhas', data: responses[0].data },
-                    { id: 2, title: 'Boas práticas agrícolas', data: responses[1].data },
-                    { id: 3, title: 'Boas práticas apícolas', data: responses[2].data },
-                    { id: 4, title: 'Boas práticas de comunicação', data: responses[3].data }
+                    { id: 1, title: 'Pesticidas e abelhas', data: responses[0] },
+                    { id: 2, title: 'Boas práticas agrícolas', data: responses[1] },
+                    { id: 3, title: 'Boas práticas apícolas', data: responses[2] },
+                    { id: 4, title: 'Boas práticas de comunicação', data: responses[3] }
                 ];
 
                 setCollections(collectionsData);
