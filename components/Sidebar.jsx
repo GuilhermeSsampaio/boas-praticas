@@ -31,10 +31,10 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                 fetchCollectionsRef.current = new AbortController(); // Create a new AbortController for each fetch
 
                 const responses = await Promise.all([
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*', { signal: fetchCollectionsRef.current.signal }),
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*', { signal: fetchCollectionsRef.current.signal }),
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*', { signal: fetchCollectionsRef.current.signal }),
-                    axios.get('https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*', { signal: fetchCollectionsRef.current.signal })
+                    axios.get('https://api-boas-praticas.onrender.com/api/pesticida-abelhas?populate=*', { signal: fetchCollectionsRef.current.signal }),
+                    axios.get('https://api-boas-praticas.onrender.com/api/boa-pratica-agricolas', { signal: fetchCollectionsRef.current.signal }),
+                    axios.get('https://api-boas-praticas.onrender.com/api/boa-pratica-apicolas?populate=*', { signal: fetchCollectionsRef.current.signal }),
+                    axios.get('https://api-boas-praticas.onrender.com/api/boa-pratica-de-comunicacaos', { signal: fetchCollectionsRef.current.signal })
                 ]);
 
                 const collectionsData = [

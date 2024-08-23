@@ -55,7 +55,7 @@ export const Capitulos = () => {
 
             fetchCapitulosRef.current = new AbortController(); // Create a new AbortController for each fetch
 
-            const url = `https://api-cartilha-teste2.onrender.com/api/${currentCollection}?populate=*`;
+            const url = `https://api-boas-praticas.onrender.com/api/${currentCollection}?populate=*`;
 
             try {
                 const response = await fetch(url, { signal: fetchCapitulosRef.current.signal });
@@ -103,9 +103,9 @@ export const Capitulos = () => {
     const handleSelectCollection = (collectionId) => {
         const collectionsMap = {
             1: 'pesticida-abelhas',
-            2: 'boa-pratica-agroes',
+            2: 'boa-pratica-agricolas',
             3: 'boa-pratica-apicolas',
-            4: 'boa-pratica-comunicacaos'
+            4: 'boa-pratica-de-comunicacaos'
         };
         setCurrentCollection(collectionsMap[collectionId]);
 
