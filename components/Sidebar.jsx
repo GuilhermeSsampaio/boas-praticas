@@ -4,6 +4,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import ChapterSearch from './ChapterSearch';
 // import { useRef } from 'react';
 
 const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, activeCollection, setActiveCollection }) => {
@@ -11,6 +12,8 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
     const [activeChapter, setActiveChapter] = useState(null);
     const [showSummary, setShowSummary] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
     const router = useRouter();
     var LogoIFEmbrapa = require('../public/logo-if-embrapa.png');
 
@@ -75,6 +78,28 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
         fetchCollections();
     }, []);
 
+    const handleSearch = useCallback((term) => {
+        setSearchTerm(term);
+        if (term.trim() === '') {
+            setSearchResults([]);
+            return;
+        }
+        const results = [];
+        collections.forEach(collection => {
+            collection.data.data.forEach(chapter => {
+                if (chapter.attributes.titulo.toLowerCase().includes(term.toLowerCase())) {
+                    results.push({
+                        collectionId: collection.id,
+                        chapterId: chapter.id,
+                        collectionTitle: collection.title,
+                        chapterTitle: chapter.attributes.titulo,
+                    });
+                }
+            });
+        });
+        setSearchResults(results);
+    }, [collections]);
+
     const closeSidebar = () => {
         const sidebarMenu = document.getElementById("sidebarMenu");
         if (sidebarMenu) {
@@ -134,6 +159,11 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
         <div>
             <nav id="sidebarMenu" className={`collapse d-lg-block sidebar bg-white thin-scrollbar ${isOffcanvasOpen ? 'show' : ''}`} tabIndex="-1">
                 <div className="position-sticky">
+                <div>
+         
+
+            
+        </div>
                     <div id="summary" className="list-group list-group-flush mt-2 py-2 menu_SIkG" style={{ display: showSummary ? 'block' : 'none' }}>
                         <div className='logo-container-fixed'>
                             <div className="logo-container d-flex align-items-center justify-content-between">
@@ -144,6 +174,11 @@ const Sidebar = ({ isOffcanvasOpen, setIsOffcanvasOpen, onSelectCollection, acti
                             </div>
                         </div>
                         <hr className="featurette-divider line-menu"></hr>
+                        <ChapterSearch
+                            collections={sortedCollections}
+                            onSelectCollection={onSelectCollection}
+                            closeSidebar={closeSidebar}
+                        />
                         <div>
                             <div className="mt-1" style={{marginBottom: '8px'}}>
                                 <a className="d-flex align-items-center" style={{padding: '0.4rem 1rem', backgroundColor: '#0000000d', fontWeight: '500'}}>Introdução</a>

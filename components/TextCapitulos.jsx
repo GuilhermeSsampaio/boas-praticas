@@ -94,7 +94,7 @@ const TextCapitulos = ({ lista, activeTitle, setActiveTitle, currentCollection }
                         {cap.attributes.subnivel.map((subcap) => (
                           <div key={subcap.id} className="subchapter">
                             <h4
-                              onClick={() => handleSubChapterNavigation(subcap.id)}
+                              // onClick={() => handleSubChapterNavigation(subcap.id)}
                               style={{ cursor: 'pointer', color: activeSubChapter === subcap.id ? 'blue' : 'black' }}
                             >
                               {subcap.titulo_secao}

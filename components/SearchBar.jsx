@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 const API_URLS = [
-  { id: 1, url: 'https://api-cartilha-teste2.onrender.com/api/pesticida-abelhas?populate=*' },
-  { id: 2, url: 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-agroes?populate=*' },
-  { id: 3, url: 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-apicolas?populate=*' },
-  { id: 4, url: 'https://api-cartilha-teste2.onrender.com/api/boa-pratica-comunicacaos?populate=*' }
+  { id: 1, url: 'https://api-boas-praticas.onrender.com/api/pesticida-abelhas?populate=*', },
+  { id: 2, url: 'https://api-boas-praticas.onrender.com/api/boa-pratica-agricolas' },
+  { id: 3, url: 'https://api-boas-praticas.onrender.com/api/boa-pratica-apicolas?populate=*' },
+  { id: 4, url: 'https://api-boas-praticas.onrender.com/api/boa-pratica-de-comunicacaos' }
 ];
 
 export const SearchBar = ({ setResults }) => {

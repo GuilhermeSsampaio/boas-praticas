@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Logo from '../public/logo.svg';
 import TextCapitulos from './TextCapitulos';
-import { SearchBar } from "./SearchBar.jsx";
-import { SearchResultsList } from "./SearchResultsList.jsx";
 import Sidebar from './Sidebar.jsx';
 import BreadcrumbsItem from './BreadCrumbsItem.jsx';
 import { Footer } from './Footer.jsx';
-import { useRef } from 'react';
-
+import { useMemo, useCallback } from 'react';
+import ChapterSearch from './ChapterSearch'; // Importar ChapterSearch
 
 export const Capitulos = () => {
     var LogoIF = require('../public/ifms-dr-marca-2015.png');
@@ -26,7 +24,20 @@ export const Capitulos = () => {
     const [activeCollection, setActiveCollection] = useState(null);
     const [isChapterLoading, setIsChapterLoading] = useState(false);
     const [collectionsData, setCollectionsData] = useState({});
+    const [collections, setCollections] = useState([]); // Adicionar estado para coleções
 
+    const sortChapters = useCallback((chapters) => {
+        return chapters.sort((a, b) => a.id - b.id);
+    }, []);
+    const sortedCollections = useMemo(() => {
+        return collections.map(collection => ({
+            ...collection,
+            data: {
+                ...collection.data,
+                data: sortChapters(collection.data.data)
+            }
+        }));
+    }, [collections, sortChapters]);
     const handleToggleBackDrop = () => {
         setIsOffcanvasOpen((prevState) => !prevState);
     };
@@ -45,10 +56,62 @@ export const Capitulos = () => {
             }
         };
     }, []);
+
     const extractChapterNumberFromAnchor = (path) => {
         const match = path.match(/#capitulo_(\d+)/);
         return match ? parseInt(match[1]) : null;
     };
+    const fetchCollectionsRef = useRef(null); // Create a ref to store the fetch function
+
+    useEffect(() => {
+        const fetchCollections = async () => {
+            try {
+                fetchCollectionsRef.current = new AbortController(); // Create a new AbortController for each fetch
+
+                const urls = [
+                    'https://api-boas-praticas.onrender.com/api/pesticida-abelhas?populate=*',
+                    'https://api-boas-praticas.onrender.com/api/boa-pratica-agricolas',
+                    'https://api-boas-praticas.onrender.com/api/boa-pratica-apicolas?populate=*',
+                    'https://api-boas-praticas.onrender.com/api/boa-pratica-de-comunicacaos'
+                ];
+
+                const responses = await Promise.all(
+                    urls.map(url => fetch(url, { signal: fetchCollectionsRef.current.signal }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    }))
+                );
+
+                const collectionsData = [
+                    { id: 1, title: 'Pesticidas e abelhas', data: responses[0] },
+                    { id: 2, title: 'Boas práticas agrícolas', data: responses[1] },
+                    { id: 3, title: 'Boas práticas apícolas', data: responses[2] },
+                    { id: 4, title: 'Boas práticas de comunicação', data: responses[3] }
+                ];
+
+                setCollections(collectionsData);
+
+                // Verificar se a coleção ativa e o capítulo ativo estão definidos
+                if (collectionsData.length > 0 && !activeCollection && !activeChapter) {
+                    const firstCollection = collectionsData[0];
+                    setActiveCollection(firstCollection.id);
+                    setActiveChapter(firstCollection.data.data[0].id);
+                    router.push(`#capitulo_${firstCollection.data.data[0].id}`, undefined, { shallow: true });
+                    onSelectCollection(firstCollection.id); // Notifica o pai sobre a seleção
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') { // Ignore AbortError
+                    console.error('Erro ao buscar as coleções', error);
+                }
+            } finally {
+                //setIsLoading(false);
+            }
+        };
+
+        fetchCollections();
+    }, []);
 
     useEffect(() => {
         const loadCapitulos = async () => {
@@ -173,11 +236,11 @@ export const Capitulos = () => {
                             <div className="hide-form-search2">
                                 <form className="d-flex rounded-pill position-relative first-form-search" role="search">
                                     <div className="search-bar-container p-1">
-                                        <SearchBar setResults={setResults} />
-                                        {results.length > 0 && <SearchResultsList results={results} handleCloseResults={handleCloseResults}
-                                            onSelectCollection={handleSelectCollection} setActiveCollection={setCurrentCollection} setActiveChapter={setActiveTitle}
-                                            activeCollection={activeCollection}
-                                        />}                                    
+                                        <ChapterSearch
+                                            collections={sortedCollections}
+                                            onSelectCollection={handleSelectCollection}
+                                            closeSidebar={() => setIsOffcanvasOpen(false)}
+                                        />
                                     </div>
                                 </form>
                             </div>
@@ -190,11 +253,11 @@ export const Capitulos = () => {
                             <form className="d-flex rounded-pill position-relative" role="search">
                                 <div className="input-group hide-form-search">
                                     <div className="search-bar-container">
-                                        <SearchBar setResults={setResults} />
-                                        {results.length > 0 && <SearchResultsList results={results} handleCloseResults={handleCloseResults}
-                                            onSelectCollection={handleSelectCollection} setActiveCollection={setCurrentCollection} setActiveChapter={setActiveTitle}
-                                            activeCollection={activeCollection}
-                                        />}
+                                        <ChapterSearch
+                                            collections={collections}
+                                            onSelectCollection={handleSelectCollection}
+                                            closeSidebar={() => setIsOffcanvasOpen(false)}
+                                        />
                                     </div>
                                 </div>
                             </form>
@@ -227,7 +290,7 @@ export const Capitulos = () => {
                                 {isChapterLoading ? (
                                     <p>Carregando...</p>
                                 ) : (
-                                    <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} />
+                                    <TextCapitulos lista={data} activeTitle={activeTitle} setActiveTitle={setActiveTitle} currentCollection={activeCollection} />
                                 )}
                                 </div>
                             </section>

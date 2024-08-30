@@ -24,7 +24,7 @@ console.log(mappedResults)
           href={`/edicao-completa#collection_${result.collection}#capitulo_${result.chapterId}`}
           key={id}
           passHref
-          onClick={() => handleResultClick(result)}
+          //onClick={() => handleResultClick(result)}
 
         >
           <SearchResult result={result} />
