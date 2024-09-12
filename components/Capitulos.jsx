@@ -70,9 +70,9 @@ export const Capitulos = () => {
 
         const urls = [
           "https://api-cartilha.squareweb.app/api/pesticida-abelhas?populate=*",
-          "https://api-cartilha.squareweb.app/api/boa-pratica-agricolas",
+          "https://api-cartilha.squareweb.app/api/boa-pratica-agroes?populate=*",
           "https://api-cartilha.squareweb.app/api/boa-pratica-apicolas?populate=*",
-          "https://api-cartilha.squareweb.app/api/boa-pratica-de-comunicacaos",
+          "https://api-cartilha.squareweb.app/api/boa-pratica-comunicacaos?populate=*",
         ];
 
         const responses = await Promise.all(
@@ -196,16 +196,16 @@ export const Capitulos = () => {
   const handleSelectCollection = (collectionId) => {
     const collectionsMap = {
       1: "pesticida-abelhas",
-      2: "boa-pratica-agricolas",
+      2: "boa-pratica-agroes",
       3: "boa-pratica-apicolas",
-      4: "boa-pratica-de-comunicacaos",
+      4: "boa-pratica-comunicacaos",
     };
     setCurrentCollection(collectionsMap[collectionId]);
 
     // Resetar o capítulo ativo ao selecionar uma nova coleção
     setActiveTitle(null);
-    // Evite redirecionamento para a página inicial se não for necessário
-    // router.push('/'); // Voltar para a página inicial ou para o estado inicial
+    // setActiveChapter(null); // Adicione esta linha para redefinir o capítulo ativo
+    setActiveCollection(collectionId); // Atualiza a coleção ativa
   };
 
   const activeChapter = data.find((item) => item.id === activeTitle);

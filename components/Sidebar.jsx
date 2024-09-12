@@ -162,6 +162,7 @@ const Sidebar = ({
     (collectionId, chapterId) => {
       onSelectCollection(collectionId); // Notifica o pai sobre a seleção
       setActiveChapter(chapterId);
+      setActiveCollection(collectionId); // Atualiza a coleção ativa
       router.push(
         `#collection_${collectionId}#capitulo_${chapterId}`,
         undefined,
