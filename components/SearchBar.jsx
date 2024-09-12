@@ -1,10 +1,22 @@
 import { useState, useEffect } from "react";
 
 const API_URLS = [
-  { id: 1, url: 'https://api-boas-praticas.onrender.com/api/pesticida-abelhas?populate=*', },
-  { id: 2, url: 'https://api-boas-praticas.onrender.com/api/boa-pratica-agricolas' },
-  { id: 3, url: 'https://api-boas-praticas.onrender.com/api/boa-pratica-apicolas?populate=*' },
-  { id: 4, url: 'https://api-boas-praticas.onrender.com/api/boa-pratica-de-comunicacaos' }
+  {
+    id: 1,
+    url: "https://api-cartilha.squareweb.app/api/pesticida-abelhas?populate=*",
+  },
+  {
+    id: 2,
+    url: "https://api-cartilha.squareweb.app/api/boa-pratica-agricolas",
+  },
+  {
+    id: 3,
+    url: "https://api-cartilha.squareweb.app/api/boa-pratica-apicolas?populate=*",
+  },
+  {
+    id: 4,
+    url: "https://api-cartilha.squareweb.app/api/boa-pratica-de-comunicacaos",
+  },
 ];
 
 export const SearchBar = ({ setResults }) => {
@@ -14,7 +26,7 @@ export const SearchBar = ({ setResults }) => {
 
   const fetchData = async (value) => {
     const allResults = [];
-  
+
     try {
       for (const { id, url } of API_URLS) {
         const response = await fetch(url);
@@ -24,26 +36,37 @@ export const SearchBar = ({ setResults }) => {
             return (
               capitulo.attributes &&
               capitulo.attributes.titulo &&
-              capitulo.attributes.titulo.toLowerCase().includes(value.toLowerCase())
+              capitulo.attributes.titulo
+                .toLowerCase()
+                .includes(value.toLowerCase())
             );
           });
-  
+
           // Adicionar a coleção a cada item de resultado
-          const resultsWithCollection = filteredResults.map(item => ({
+          const resultsWithCollection = filteredResults.map((item) => ({
             ...item,
-            collection: id
+            collection: id,
           }));
-  
+
           allResults.push(...resultsWithCollection);
         } else {
-          console.error('Falha na requisição. Código de status:', response.status);
+          console.error(
+            "Falha na requisição. Código de status:",
+            response.status
+          );
         }
       }
-  
-      const uniqueResults = Array.from(new Map(allResults.map(item => [item.attributes.titulo, item])).values());
-  
+
+      const uniqueResults = Array.from(
+        new Map(
+          allResults.map((item) => [item.attributes.titulo, item])
+        ).values()
+      );
+
       setResults(uniqueResults);
-      setShowNoResultsMessage(uniqueResults.length === 0 && value.trim() !== "");
+      setShowNoResultsMessage(
+        uniqueResults.length === 0 && value.trim() !== ""
+      );
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
       setResults([]);
@@ -79,7 +102,13 @@ export const SearchBar = ({ setResults }) => {
         value={input}
         onChange={(e) => handleChange(e.target.value)}
       />
-      {showNoResultsMessage && <div className="results-list"><p className='result-nulo'>Nenhum resultado encontrado para "{input}".</p></div>}
+      {showNoResultsMessage && (
+        <div className="results-list">
+          <p className="result-nulo">
+            Nenhum resultado encontrado para "{input}".
+          </p>
+        </div>
+      )}
     </div>
   );
 };

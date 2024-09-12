@@ -46,10 +46,10 @@ const Sidebar = ({
         fetchCollectionsRef.current = new AbortController(); // Create a new AbortController for each fetch
 
         const urls = [
-          "https://api-boas-praticas.onrender.com/api/pesticida-abelhas?populate=*",
-          "https://api-boas-praticas.onrender.com/api/boa-pratica-agricolas",
-          "https://api-boas-praticas.onrender.com/api/boa-pratica-apicolas?populate=*",
-          "https://api-boas-praticas.onrender.com/api/boa-pratica-de-comunicacaos",
+          "https://api-cartilha.squareweb.app/api/pesticida-abelhas?populate=*",
+          "https://api-cartilha.squareweb.app/api/boa-pratica-agroes",
+          "https://api-cartilha.squareweb.app/api/boa-pratica-apicolas?populate=*",
+          "https://api-cartilha.squareweb.app/api/boa-pratica-comunicacaos",
         ];
 
         const responses = await Promise.all(
@@ -247,7 +247,7 @@ const Sidebar = ({
               </div>
             </div>
             <hr className="featurette-divider line-menu"></hr>
-            
+
             <div>
               <div className="mt-1" style={{ marginBottom: "8px" }}>
                 <a
