@@ -8,48 +8,30 @@ import TextCapitulos from "./TextCapitulos";
 import Sidebar from "./Sidebar.jsx";
 import BreadcrumbsItem from "./BreadCrumbsItem.jsx";
 import { Footer } from "./Footer.jsx";
-import { useMemo, useCallback } from "react";
-import ChapterSearch from "./ChapterSearch"; // Importar ChapterSearch
+import { Navbar } from "./Navbar.jsx";
+import useFetchCollections from "../hooks/useFetchCollections.js";
 
 export const Capitulos = () => {
-  var LogoIF = require("../public/ifms-dr-marca-2015.png");
-  var LogoEmbrapa = require("../public/logo-embrapa-400.png");
+  const LogoIF = require("../public/ifms-dr-marca-2015.png");
+  const LogoEmbrapa = require("../public/logo-embrapa-400.png");
   const router = useRouter();
   const { asPath } = router;
-  const [results, setResults] = useState([]);
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   const [data, setData] = useState([]);
   const [activeTitle, setActiveTitle] = useState(null);
   const [currentCollection, setCurrentCollection] = useState(null);
-  const [activeCollection, setActiveCollection] = useState(null);
   const [isChapterLoading, setIsChapterLoading] = useState(false);
   const [collectionsData, setCollectionsData] = useState({});
-  const [collections, setCollections] = useState([]); // Adicionar estado para coleções
+  const { collections, activeCollection, setActiveCollection } =
+    useFetchCollections();
 
-  const sortChapters = useCallback((chapters) => {
-    return chapters.sort((a, b) => a.id - b.id);
-  }, []);
-  const sortedCollections = useMemo(() => {
-    return collections.map((collection) => ({
-      ...collection,
-      data: {
-        ...collection.data,
-        data: sortChapters(collection.data.data),
-      },
-    }));
-  }, [collections, sortChapters]);
   const handleToggleBackDrop = () => {
     setIsOffcanvasOpen((prevState) => !prevState);
   };
 
-  const handleCloseResults = () => {
-    setResults([]);
-  };
-
-  const fetchCapitulosRef = useRef(null); // Create a ref to store the fetch function
+  const fetchCapitulosRef = useRef(null);
 
   useEffect(() => {
-    // Cleanup function to cancel previous fetch requests
     return () => {
       if (fetchCapitulosRef.current) {
         fetchCapitulosRef.current.abort();
@@ -61,79 +43,18 @@ export const Capitulos = () => {
     const match = path.match(/#capitulo_(\d+)/);
     return match ? parseInt(match[1]) : null;
   };
-  const fetchCollectionsRef = useRef(null); // Create a ref to store the fetch function
-
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        fetchCollectionsRef.current = new AbortController(); // Create a new AbortController for each fetch
-
-        const urls = [
-          "https://api-cartilha.squareweb.app/api/pesticida-abelhas?populate=*",
-          "https://api-cartilha.squareweb.app/api/boa-pratica-agroes?populate=*",
-          "https://api-cartilha.squareweb.app/api/boa-pratica-apicolas?populate=*",
-          "https://api-cartilha.squareweb.app/api/boa-pratica-comunicacaos?populate=*",
-        ];
-
-        const responses = await Promise.all(
-          urls.map((url) =>
-            fetch(url, { signal: fetchCollectionsRef.current.signal }).then(
-              (response) => {
-                if (!response.ok) {
-                  throw new Error("Network response was not ok");
-                }
-                return response.json();
-              }
-            )
-          )
-        );
-
-        const collectionsData = [
-          { id: 1, title: "Pesticidas e abelhas", data: responses[0] },
-          { id: 2, title: "Boas práticas agrícolas", data: responses[1] },
-          { id: 3, title: "Boas práticas apícolas", data: responses[2] },
-          { id: 4, title: "Boas práticas de comunicação", data: responses[3] },
-        ];
-
-        setCollections(collectionsData);
-
-        // Verificar se a coleção ativa e o capítulo ativo estão definidos
-        if (collectionsData.length > 0 && !activeCollection && !activeChapter) {
-          const firstCollection = collectionsData[0];
-          setActiveCollection(firstCollection.id);
-          setActiveChapter(firstCollection.data.data[0].id);
-          router.push(
-            `#capitulo_${firstCollection.data.data[0].id}`,
-            undefined,
-            { shallow: true }
-          );
-          onSelectCollection(firstCollection.id); // Notifica o pai sobre a seleção
-        }
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          // Ignore AbortError
-          console.error("Erro ao buscar as coleções", error);
-        }
-      } finally {
-        //setIsLoading(false);
-      }
-    };
-
-    fetchCollections();
-  }, []);
 
   useEffect(() => {
     const loadCapitulos = async () => {
-      if (!currentCollection) return; // Não carregar se nenhuma coleção estiver selecionada
+      if (!currentCollection) return;
 
-      // Verifique se a coleção já foi carregada
       if (collectionsData[currentCollection]) {
         setData(collectionsData[currentCollection]);
         return;
       }
 
-      setIsChapterLoading(true); // Inicia o carregamento do capítulo
-      fetchCapitulosRef.current = new AbortController(); // Create a new AbortController for each fetch
+      setIsChapterLoading(true);
+      fetchCapitulosRef.current = new AbortController();
 
       const url = `https://api-cartilha.squareweb.app/api/${currentCollection}?populate=*`;
 
@@ -146,13 +67,10 @@ export const Capitulos = () => {
           const data = json.data;
           setData(data);
 
-          // Armazene os dados da coleção carregada
           setCollectionsData((prevData) => ({
             ...prevData,
             [currentCollection]: data,
           }));
-
-          // ... rest of your logic to set activeTitle
         } else {
           throw new Error(
             "Falha na requisição. Código de status: " + response.status
@@ -160,7 +78,6 @@ export const Capitulos = () => {
         }
       } catch (error) {
         if (error.name !== "AbortError") {
-          // Ignore AbortError
           console.error(error);
         }
       } finally {
@@ -172,7 +89,6 @@ export const Capitulos = () => {
   }, [currentCollection]);
 
   useEffect(() => {
-    // Atualiza o capítulo ativo baseado na URL
     const chapterNumber = extractChapterNumberFromAnchor(asPath);
     if (chapterNumber !== null) {
       setActiveTitle(chapterNumber);
@@ -181,17 +97,12 @@ export const Capitulos = () => {
 
   useEffect(() => {
     if (activeTitle !== null) {
-      scrollToTop();
-      console.log("chamnou scrol top");
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   }, [activeTitle]);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
 
   const handleSelectCollection = (collectionId) => {
     const collectionsMap = {
@@ -201,11 +112,8 @@ export const Capitulos = () => {
       4: "boa-pratica-comunicacaos",
     };
     setCurrentCollection(collectionsMap[collectionId]);
-
-    // Resetar o capítulo ativo ao selecionar uma nova coleção
     setActiveTitle(null);
-    // setActiveChapter(null); // Adicione esta linha para redefinir o capítulo ativo
-    setActiveCollection(collectionId); // Atualiza a coleção ativa
+    setActiveCollection(collectionId);
   };
 
   const activeChapter = data.find((item) => item.id === activeTitle);
@@ -226,105 +134,18 @@ export const Capitulos = () => {
           setIsOffcanvasOpen={setIsOffcanvasOpen}
           onSelectCollection={handleSelectCollection}
           activeCollection={activeCollection}
-          setActiveCollection={setActiveCollection}
+          collections={collections}
         />
 
-        <nav
-          id="main-navbar"
-          className="navbar navbar-expand-lg navbar-light bg-white fixed-top"
-        >
-          <div className="container-fluid">
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-mdb-toggle="collapse"
-              data-mdb-target="#sidebarMenu"
-              aria-controls="sidebarMenu"
-              aria-expanded="false"
-              aria-label="Toggle Offcanvas"
-              onClick={handleToggleBackDrop}
-            >
-              <i className="fas fa-bars"></i>
-            </button>
-            <Link className="navbar-brand" href="/home">
-              <Image src={Logo} width="100%" height={26} alt="logo Embrapa" />
-            </Link>
-            <ul className="navbar-nav ms-auto d-flex flex-row">
-              <li className="nav-item text-item-link">
-                <Link
-                  className="nav-link back-item-link"
-                  href="/edicao-completa"
-                  aria-current="page"
-                >
-                  <span className="link-text">Edição Completa</span>
-                </Link>
-              </li>
-              <li className="nav-item text-item-link">
-                <Link
-                  className="nav-link back-item-link"
-                  href="/autores"
-                  aria-current="page"
-                >
-                  <span className="link-text">Autores</span>
-                </Link>
-              </li>
-              <div className="hide-form-search2">
-                <form
-                  className="d-flex rounded-pill position-relative first-form-search"
-                  role="search"
-                >
-                  <div className="search-bar-container p-1">
-                    <ChapterSearch
-                      collections={sortedCollections}
-                      onSelectCollection={handleSelectCollection}
-                      closeSidebar={() => setIsOffcanvasOpen(false)}
-                    />
-                  </div>
-                </form>
-              </div>
-              <li className="nav-item">
-                <Image
-                  src={LogoIF}
-                  className="logotipo img"
-                  width={130}
-                  height={35}
-                  alt="Logotipo do IFMS Campus Dourados"
-                  priority
-                />
-              </li>
-              <li className="nav-item me-lg-0">
-                <Image
-                  src={LogoEmbrapa}
-                  className="logotipo img"
-                  width={70}
-                  height={48}
-                  alt="Logotipo da Embrapa"
-                  priority
-                />
-              </li>
-              <form
-                className="d-flex rounded-pill position-relative"
-                role="search"
-              >
-                <div className="input-group hide-form-search">
-                  <div className="search-bar-container">
-                    <ChapterSearch
-                      collections={collections}
-                      onSelectCollection={handleSelectCollection}
-                      closeSidebar={() => setIsOffcanvasOpen(false)}
-                    />
-                  </div>
-                </div>
-              </form>
-            </ul>
-          </div>
-          {isOffcanvasOpen && (
-            <div
-              className="offcanvas-backdrop show"
-              onClick={handleToggleBackDrop}
-            ></div>
-          )}
-        </nav>
+        <Navbar
+          isOffcanvasOpen={isOffcanvasOpen}
+          handleToggleBackDrop={handleToggleBackDrop}
+          collections={collections}
+          handleSelectCollection={handleSelectCollection}
+          Logo={Logo}
+          LogoIF={LogoIF}
+          LogoEmbrapa={LogoEmbrapa}
+        />
 
         <main className="docMainContainer_gTbr">
           <div className="container padding-bottom--lg">
@@ -379,20 +200,7 @@ export const Capitulos = () => {
           </div>
         </main>
       </div>
-      <footer>
-        <div className="container container-footer-cap bottom-0 end-0">
-          <div className="title-footer">
-            <p>Embrapa Agropecuária Oeste</p>
-          </div>
-          <div className="description-footer">
-            <p>
-              Rodovia BR 163, Km 253,6, Caixa Postal 449, CEP: 79804-970,
-              Dourados, MS
-            </p>
-            <p>Fone: + 55 (67) 3416-9700</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 };
