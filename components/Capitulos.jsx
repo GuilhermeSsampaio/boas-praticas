@@ -139,6 +139,7 @@ export const Capitulos = () => {
 
         <Navbar
           isOffcanvasOpen={isOffcanvasOpen}
+          setIsOffcanvasOpen={setIsOffcanvasOpen}
           handleToggleBackDrop={handleToggleBackDrop}
           collections={collections}
           handleSelectCollection={handleSelectCollection}

@@ -5,6 +5,7 @@ import ChapterSearch from "./ChapterSearch";
 
 export const Navbar = ({
   isOffcanvasOpen,
+  setIsOffcanvasOpen,
   handleToggleBackDrop,
   collections,
   handleSelectCollection,
